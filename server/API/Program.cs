@@ -1,6 +1,6 @@
 using Api.Misc;
 using DataAccess;
-using DataAccess.Models;
+using DataAccess.Entities;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -147,11 +147,11 @@ public class Program
                 c.RoutePrefix = "api/swagger";
             });
         }
-        app.MapGet("/", context =>
-        {
-            context.Response.Redirect("/api/swagger/index.html");
-            return Task.CompletedTask;
-        });
+        // app.MapGet("/", context =>
+        // {
+        //     context.Response.Redirect("/api/swagger/index.html");
+        //     return Task.CompletedTask;
+        // });
         app.UseHttpsRedirection();
         // app.MapIdentityApi<User>();
         app.UseAuthentication();
