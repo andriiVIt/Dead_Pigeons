@@ -1,16 +1,18 @@
-using System.Security.Authentication;
-using System.Text.Json;
+ 
 using DataAccess.Entities;
+using DataAccess.models;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Service;
 using Service.Auth.Dto;
 using Service.Security;
+using Role = Service.Role;
 
-namespace Api.Controllers;
+namespace API.Controllers;
 
 [ApiController]
 [Route("api/auth")]
@@ -29,11 +31,13 @@ public class AuthController : ControllerBase
         await validator.ValidateAndThrowAsync(data);
         var user = await userManager.FindByEmailAsync(data.Email);
         if (user == null || !await userManager.CheckPasswordAsync(user, data.Password))
-            throw new AuthenticationException("Invalid login");
+        {
+            throw new AuthenticationError();
+        }
 
         var token = await tokenClaimsService.GetTokenAsync(data.Email);
 
-        return new LoginResponse(token);
+        return new LoginResponse(Jwt: token);
     }
 
     [HttpPost]
@@ -47,15 +51,15 @@ public class AuthController : ControllerBase
     )
     {
         await validator.ValidateAndThrowAsync(data);
-
-        var user = new User { UserName = data.Email, Email = data.Email };
+        var user = new User { Email = data.Email, UserName = data.Email };
         var result = await userManager.CreateAsync(user, data.Password);
         if (!result.Succeeded)
-            throw new Exception(
-                JsonSerializer.Serialize(result.Errors.ToDictionary(x => x.Code, x => new[] { x.Description })));
-       
-        await userManager.AddToRoleAsync(user, Role.Reader);
-        return new RegisterResponse(user.Email, user.UserName);
+        {
+            throw new ValidationError(result.Errors.ToDictionary(x => x.Code, x => new [] {x.Description}));
+        }
+         
+        await userManager.AddToRoleAsync(user, Role.Player);
+         return new RegisterResponse(user.Email, user.UserName);
     }
 
     [HttpPost]
@@ -64,17 +68,18 @@ public class AuthController : ControllerBase
     {
         await signInManager.SignOutAsync();
         return Results.Ok();
+        
     }
 
-    [HttpGet]
-    [Route("userinfo")]
-    public async Task<AuthUserInfo> UserInfo([FromServices] UserManager<User> userManager)
-    {
-        var username = HttpContext.User.Identity?.Name ?? throw new AuthenticationException();
-        var user = await userManager.FindByNameAsync(username) ?? throw new AuthenticationException();
-        var roles = await userManager.GetRolesAsync(user);
-        var isAdmin = roles.Contains(Role.Admin);
-        var canPublish = roles.Contains(Role.Editor) || isAdmin;
-        return new AuthUserInfo(username, isAdmin, canPublish);
-    }
+    // [HttpGet]
+    // [Route("userinfo")]
+    // public async Task<AuthUserInfo> UserInfo([FromServices] UserManager<User> userManager)
+    // {
+    //     var username = (HttpContext.User.Identity?.Name) ?? throw new AuthenticationError();
+    //     var user = await userManager.FindByNameAsync(username) ?? throw new AuthenticationError();
+    //     var roles = await userManager.GetRolesAsync(user);
+    //     var isAdmin = roles.Contains(Role.Admin);
+    //     var canPublish = roles.Contains(Role.Editor) || isAdmin;
+    //     return new AuthUserInfo(username, isAdmin, canPublish);
+    // }
 }
