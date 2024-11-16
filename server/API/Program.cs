@@ -9,11 +9,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 using Service;
+using Service.Interfaces;
 using Service.Repositories;
 // using Service.Blog;
 // using Service.Draft;
 using Service.Repositories;
 using Service.Security;
+using Service.Services;
 using OpenApiSecurityRequirement = NSwag.OpenApiSecurityRequirement;
 using OpenApiSecurityScheme = NSwag.OpenApiSecurityScheme;
 
@@ -77,8 +79,10 @@ public class Program
 
         #region Services
         builder.Services.AddValidatorsFromAssemblyContaining<ServiceAssembly>();
-        // builder.Services.AddScoped<IBlogService, BlogService>();
-        // builder.Services.AddScoped<IDraftService, DraftService>();
+        builder.Services.AddScoped<IPlayerService, PlayerService>();
+        // builder.Services.AddScoped<IGameService, GameService>();
+        // builder.Services.AddScoped<IBoardService, BoardService>();
+         
         #endregion
 
         #region Swagger

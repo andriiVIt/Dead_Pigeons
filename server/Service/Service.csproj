@@ -13,5 +13,9 @@
         <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.*"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="DTO\" />
+    </ItemGroup>
+
 
 </Project>
