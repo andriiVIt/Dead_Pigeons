@@ -1,13 +1,15 @@
-using DataAccess.models;
-using Service.Game;
+using Service.DTO.Game;
 
 namespace Service.Interfaces;
 
+ 
+
 public interface IGameService
 {
-    Task<IEnumerable<GetGameDto>> GetAllAsync();
-    Task<GetGameDto?> GetByIdAsync(Guid id);
-    Task<GetGameDto> CreateAsync(CreateGameDto dto);
-    Task<bool> UpdateAsync(Guid id, UpdateGameDto dto);
-    Task<bool> DeleteAsync(Guid id);
+    GetGameDto CreateGame(CreateGameDto createGameDto);
+    GetGameDto UpdateGame(Guid id, UpdateGameDto updateGameDto);
+    List<GetGameDto> GetAllGames(int limit, int startAt);
+    GetGameDto? GetGameById(Guid id);
+    bool DeleteGame(Guid id);
+    CheckWinnerResponseDto CheckForWinner(Guid gameId, Guid playerId);
 }

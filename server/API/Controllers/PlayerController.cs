@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Service;
 using Service.Interfaces;
- 
-using Service.Player;
+using Service.DTO.Player;
 
 namespace Api.Controllers;
 
@@ -9,61 +9,58 @@ namespace Api.Controllers;
 [Route("api/[controller]")]
 public class PlayerController : ControllerBase
 {
-    private readonly IPlayerService _playerService;
+    private readonly IPlayerService _service;
 
-    public PlayerController(IPlayerService playerService)
+    public PlayerController(IPlayerService service)
     {
-        _playerService = playerService;
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetPlayers()
-    {
-        var players = await _playerService.GetAllAsync();
-        return Ok(players);
-    }
-
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetPlayer(Guid id)
-    {
-        var player = await _playerService.GetByIdAsync(id);
-        if (player == null)
-            return NotFound();
-
-        return Ok(player);
+        _service = service;
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreatePlayer([FromBody] CreatePlayerDto playerDto)
+    [Route("")]
+    public ActionResult<GetPlayerDto> CreatePlayer([FromBody] CreatePlayerDto createPlayerDto)
     {
-        var createdPlayer = await _playerService.CreatePlayerAsync(playerDto);
-        return CreatedAtAction(
-            nameof(GetPlayer), 
-            new { id = createdPlayer.Id }, 
-            createdPlayer
-        );
+        var player = _service.CreatePlayer(createPlayerDto);
+        return CreatedAtAction(nameof(GetPlayerById), new { id = player.Id }, player);
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdatePlayer(Guid id, [FromBody] UpdatePlayerDto updatePlayerDto)
+    [HttpPut]
+    [Route("{id:guid}")]
+    public ActionResult<GetPlayerDto> UpdatePlayer(Guid id, [FromBody] UpdatePlayerDto updatePlayerDto)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        var player = _service.UpdatePlayer(id, updatePlayerDto);
+        return Ok(player);
+    }
 
-        var updatedPlayer = await _playerService.UpdateAsync(id, updatePlayerDto);
-        if (updatedPlayer == null)
+    [HttpGet]
+    [Route("")]
+    public ActionResult<List<GetPlayerDto>> GetAllPlayers(int limit = 10, int startAt = 0)
+    {
+        var players = _service.GetAllPlayers(limit, startAt);
+        return Ok(players);
+    }
+
+    [HttpGet]
+    [Route("{id:guid}")]
+    public ActionResult<GetPlayerDto> GetPlayerById(Guid id)
+    {
+        var player = _service.GetPlayerById(id);
+        if (player == null)
+        {
             return NotFound();
-
-        return Ok(updatedPlayer);
+        }
+        return Ok(player);
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeletePlayer(Guid id)
+    [HttpDelete]
+    [Route("{id:guid}")]
+    public ActionResult DeletePlayer(Guid id)
     {
-        var success = await _playerService.DeleteAsync(id);
+        var success = _service.DeletePlayer(id);
         if (!success)
+        {
             return NotFound();
-
+        }
         return NoContent();
     }
 }

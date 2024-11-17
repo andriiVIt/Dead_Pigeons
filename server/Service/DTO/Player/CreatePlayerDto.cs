@@ -1,6 +1,6 @@
 
 
-namespace Service.Player;
+namespace Service.DTO.Player;
 
  using DataAccess.models;
  

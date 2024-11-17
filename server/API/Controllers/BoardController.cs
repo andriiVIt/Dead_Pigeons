@@ -1,7 +1,7 @@
-using DataAccess;
-using DataAccess.models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Service.DTO.Board;
+using Service.DTO.Board;
+using Service.Interfaces;
 
 namespace Api.Controllers;
 
@@ -9,61 +9,51 @@ namespace Api.Controllers;
 [Route("api/[controller]")]
 public class BoardController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IBoardService _service;
 
-    public BoardController(AppDbContext context)
+    public BoardController(IBoardService service)
     {
-        _context = context;
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetBoards()
-    {
-        var boards = await _context.Boards.ToListAsync();
-        return Ok(boards);
-    }
-
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetBoard(Guid id)
-    {
-        var board = await _context.Boards.FindAsync(id);
-        if (board == null)
-            return NotFound();
-        return Ok(board);
+        _service = service;
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateBoard([FromBody] Board board)
+    public ActionResult<GetBoardDto> CreateBoard([FromBody] CreateBoardDto dto)
     {
-        await _context.Boards.AddAsync(board);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetBoard), new { id = board.Id }, board);
+        var board = _service.CreateBoard(dto);
+        return Ok(board);
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateBoard(Guid id, [FromBody] Board updatedBoard)
+    public ActionResult<GetBoardDto> UpdateBoard(Guid id, [FromBody] UpdateBoardDto dto)
     {
-        var board = await _context.Boards.FindAsync(id);
+        var board = _service.UpdateBoard(id, dto);
+        return Ok(board);
+    }
+
+    [HttpGet("{id:guid}")]
+    public ActionResult<GetBoardDto> GetBoardById(Guid id)
+    {
+        var board = _service.GetBoardById(id);
         if (board == null)
             return NotFound();
 
-        board.Numbers = updatedBoard.Numbers;
-        board.PlayerId = updatedBoard.PlayerId;
-        board.GameId = updatedBoard.GameId;
+        return Ok(board);
+    }
 
-        await _context.SaveChangesAsync();
-        return NoContent();
+    [HttpGet]
+    public ActionResult<List<GetBoardDto>> GetAllBoards(int limit = 10, int startAt = 0)
+    {
+        var boards = _service.GetAllBoards(limit, startAt);
+        return Ok(boards);
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteBoard(Guid id)
+    public ActionResult DeleteBoard(Guid id)
     {
-        var board = await _context.Boards.FindAsync(id);
-        if (board == null)
+        var success = _service.DeleteBoard(id);
+        if (!success)
             return NotFound();
 
-        _context.Boards.Remove(board);
-        await _context.SaveChangesAsync();
         return NoContent();
     }
 }

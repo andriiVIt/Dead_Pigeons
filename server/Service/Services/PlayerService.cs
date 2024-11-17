@@ -1,70 +1,91 @@
 using DataAccess;
-using DataAccess.models;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Service.Interfaces;
-using Service.Player;
+using Service.DTO.Player;
 
-namespace Service.Services;
+namespace Service;
 
 public class PlayerService : IPlayerService
 {
+    private readonly ILogger<PlayerService> _logger;
+    private readonly IValidator<CreatePlayerDto> _createPlayerValidator;
+    private readonly IValidator<UpdatePlayerDto> _updatePlayerValidator;
     private readonly AppDbContext _context;
 
-    public PlayerService(AppDbContext context)
+    public PlayerService(
+        ILogger<PlayerService> logger,
+        IValidator<CreatePlayerDto> createPlayerValidator,
+        IValidator<UpdatePlayerDto> updatePlayerValidator,
+        AppDbContext context)
     {
+        _logger = logger;
+        _createPlayerValidator = createPlayerValidator;
+        _updatePlayerValidator = updatePlayerValidator;
         _context = context;
     }
 
-    public async Task<IEnumerable<GetPlayerDto>> GetAllAsync()
+    public GetPlayerDto CreatePlayer(CreatePlayerDto createPlayerDto)
     {
-        var players = await _context.Players.ToListAsync();
-        return players.Select(GetPlayerDto.FromEntity);
-    }
+        _createPlayerValidator.ValidateAndThrow(createPlayerDto);
 
-    public async Task<GetPlayerDto?> GetByIdAsync(Guid id)
-    {
-        var player = await _context.Players.FindAsync(id);
-        return player == null ? null : GetPlayerDto.FromEntity(player);
-    }
-
-    public async Task<GetPlayerDto> CreatePlayerAsync(CreatePlayerDto createPlayerDto)
-    {
-        // Перевіряємо, чи існує користувач із вказаним UserId
-        var userExists = await _context.Users.AnyAsync(u => u.Id == createPlayerDto.UserId);
-        if (!userExists)
+        if (!_context.Users.Any(u => u.Id == createPlayerDto.UserId))
         {
             throw new ArgumentException("UserId does not exist.");
         }
 
-        // Перетворення DTO -> Entity
         var player = CreatePlayerDto.ToEntity(createPlayerDto);
 
-        // Додавання нового гравця до бази даних
         _context.Players.Add(player);
-        await _context.SaveChangesAsync();
+        _context.SaveChanges();
 
-        // Перетворення Entity -> DTO для відповіді
         return GetPlayerDto.FromEntity(player);
     }
 
-
-    public async Task<bool> UpdateAsync(Guid id, UpdatePlayerDto updatePlayerDto)
+    public GetPlayerDto UpdatePlayer(Guid id, UpdatePlayerDto updatePlayerDto)
     {
-        var player = await _context.Players.FindAsync(id);
-        if (player == null) return false;
+        _updatePlayerValidator.ValidateAndThrow(updatePlayerDto);
+
+        var player = _context.Players.FirstOrDefault(p => p.Id == id);
+        if (player == null)
+        {
+            throw new KeyNotFoundException("Player not found.");
+        }
+
+        player.Name = updatePlayerDto.Name;
+        player.Balance = updatePlayerDto.Balance;
+        player.IsActive = updatePlayerDto.IsActive;
 
         _context.Players.Update(player);
-        await _context.SaveChangesAsync();
-        return true;
+        _context.SaveChanges();
+
+        return GetPlayerDto.FromEntity(player);
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public List<GetPlayerDto> GetAllPlayers(int limit, int startAt)
     {
-        var player = await _context.Players.FindAsync(id);
-        if (player == null) return false;
+        var players = _context.Players.OrderBy(p => p.Id).Skip(startAt).Take(limit).ToList();
+
+        return players.Select(GetPlayerDto.FromEntity).ToList();
+    }
+
+    public GetPlayerDto GetPlayerById(Guid id)
+    {
+        var player = _context.Players.FirstOrDefault(p => p.Id == id);
+        return player == null ? null : GetPlayerDto.FromEntity(player);
+    }
+
+    public bool DeletePlayer(Guid id)
+    {
+        var player = _context.Players.FirstOrDefault(p => p.Id == id);
+        if (player == null)
+        {
+            return false;
+        }
 
         _context.Players.Remove(player);
-        await _context.SaveChangesAsync();
+        _context.SaveChanges();
         return true;
     }
 }

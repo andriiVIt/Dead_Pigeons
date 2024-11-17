@@ -1,69 +1,63 @@
-using DataAccess;
-using DataAccess.models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
 namespace Api.Controllers;
+
+using Microsoft.AspNetCore.Mvc;
+using Service.DTO.Game;
+using Service.Interfaces;
 
 [ApiController]
 [Route("api/[controller]")]
 public class GameController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IGameService _service;
 
-    public GameController(AppDbContext context)
+    public GameController(IGameService service)
     {
-        _context = context;
+        _service = service;
+    }
+
+    [HttpPost]
+    public ActionResult<GetGameDto> CreateGame(CreateGameDto createGameDto)
+    {
+        var game = _service.CreateGame(createGameDto);
+        return Ok(game);
+    }
+
+    [HttpPut("{id:guid}")]
+    public ActionResult<GetGameDto> UpdateGame(Guid id, UpdateGameDto updateGameDto)
+    {
+        var game = _service.UpdateGame(id, updateGameDto);
+        return Ok(game);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetGames()
+    public ActionResult<List<GetGameDto>> GetAllGames(int limit = 10, int startAt = 0)
     {
-        var games = await _context.Games.ToListAsync();
+        var games = _service.GetAllGames(limit, startAt);
         return Ok(games);
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetGame(Guid id)
+    public ActionResult<GetGameDto> GetGameById(Guid id)
     {
-        var game = await _context.Games.FindAsync(id);
-        if (game == null)
-            return NotFound();
+        var game = _service.GetGameById(id);
+        if (game == null) return NotFound();
+
         return Ok(game);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateGame([FromBody] Game game)
-    {
-        await _context.Games.AddAsync(game);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetGame), new { id = game.Id }, game);
-    }
-
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateGame(Guid id, [FromBody] Game updatedGame)
-    {
-        var game = await _context.Games.FindAsync(id);
-        if (game == null)
-            return NotFound();
-
-        game.StartDate = updatedGame.StartDate;
-        game.EndDate = updatedGame.EndDate;
-        game.WinningSequence = updatedGame.WinningSequence;
-
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
-
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteGame(Guid id)
+    public ActionResult DeleteGame(Guid id)
     {
-        var game = await _context.Games.FindAsync(id);
-        if (game == null)
-            return NotFound();
+        var success = _service.DeleteGame(id);
+        if (!success) return NotFound();
 
-        _context.Games.Remove(game);
-        await _context.SaveChangesAsync();
         return NoContent();
+    }
+    [HttpPost]
+    [Route("{gameId:guid}/check-winner")]
+    public ActionResult<CheckWinnerResponseDto> CheckWinner(Guid gameId, [FromBody] Guid playerId)
+    {
+        var result = _service.CheckForWinner(gameId, playerId);
+        return Ok(result);
     }
 }

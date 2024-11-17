@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Service;
-using Service.Auth.Dto;
+using Service.DTO.Auth.Dto;
 using Service.Security;
 using Role = Service.Role;
 

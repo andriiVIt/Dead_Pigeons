@@ -1,13 +1,13 @@
-using DataAccess.models;
-using Service.Player;
+using Service.DTO.Player;
+ 
 
 namespace Service.Interfaces;
 
 public interface IPlayerService
 {
-    Task<IEnumerable<GetPlayerDto>> GetAllAsync();
-    Task<GetPlayerDto?> GetByIdAsync(Guid id);
-    Task<GetPlayerDto> CreatePlayerAsync(CreatePlayerDto createPlayerDto);
-    Task<bool> UpdateAsync(Guid id, UpdatePlayerDto updatePlayerDto);
-    Task<bool> DeleteAsync(Guid id);
+    GetPlayerDto CreatePlayer(CreatePlayerDto createPlayerDto);
+    GetPlayerDto UpdatePlayer(Guid id, UpdatePlayerDto updatePlayerDto);
+    List<GetPlayerDto> GetAllPlayers(int limit, int startAt);
+    GetPlayerDto GetPlayerById(Guid id);
+    bool DeletePlayer(Guid id);
 }

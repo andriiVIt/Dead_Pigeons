@@ -1,4 +1,4 @@
-namespace Service.Auth.Dto;
+namespace Service.DTO.Auth.Dto;
 
 public record RegisterResponse(string Email, string Name);
 

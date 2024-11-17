@@ -1,7 +1,8 @@
-using DataAccess;
-using DataAccess.models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Service;
+using Service.DTO.Game;
+using Service.Interfaces;
+using Service.DTO.Winner;
 
 namespace Api.Controllers;
 
@@ -9,60 +10,41 @@ namespace Api.Controllers;
 [Route("api/[controller]")]
 public class WinnerController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IWinnerService _winnerService;
 
-    public WinnerController(AppDbContext context)
+    public WinnerController(IWinnerService winnerService)
     {
-        _context = context;
+        _winnerService = winnerService;
     }
 
+    // Отримання списку переможців для конкретної гри
     [HttpGet]
-    public async Task<IActionResult> GetWinners()
+    [Route("game/{gameId:guid}")]
+    public ActionResult<List<GetWinnerDto>> GetWinnersByGame(Guid gameId)
     {
-        var winners = await _context.Winners.ToListAsync();
+        var winners = _winnerService.GetWinnersByGame(gameId);
         return Ok(winners);
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetWinner(Guid id)
-    {
-        var winner = await _context.Winners.FindAsync(id);
-        if (winner == null)
-            return NotFound();
-        return Ok(winner);
-    }
-
+    // Перевірка, чи є гравець переможцем, та створення запису про переможця
     [HttpPost]
-    public async Task<IActionResult> CreateWinner([FromBody] Winner winner)
-    {
-        await _context.Winners.AddAsync(winner);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetWinner), new { id = winner.Id }, winner);
-    }
+    [Route("game/{gameId:guid}/check")]
+    // public ActionResult<CheckWinnerResponseDto> CheckForWinner(Guid gameId, [FromBody] Guid playerId)
+    // {
+    //     var result = _winnerService.CheckForWinner(gameId, playerId);
+    //     return Ok(result);
+    // }
 
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateWinner(Guid id, [FromBody] Winner updatedWinner)
+    // Отримання детальної інформації про конкретного переможця
+    [HttpGet]
+    [Route("{winnerId:guid}")]
+    public ActionResult<GetWinnerDto> GetWinnerById(Guid winnerId)
     {
-        var winner = await _context.Winners.FindAsync(id);
+        var winner = _winnerService.GetWinnerById(winnerId);
         if (winner == null)
+        {
             return NotFound();
-
-        winner.PlayerId = updatedWinner.PlayerId;
-        winner.GameId = updatedWinner.GameId;
-
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
-
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteWinner(Guid id)
-    {
-        var winner = await _context.Winners.FindAsync(id);
-        if (winner == null)
-            return NotFound();
-
-        _context.Winners.Remove(winner);
-        await _context.SaveChangesAsync();
-        return NoContent();
+        }
+        return Ok(winner);
     }
 }

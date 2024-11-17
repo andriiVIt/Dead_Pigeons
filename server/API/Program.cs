@@ -7,17 +7,21 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-
 using Service;
 using Service.Interfaces;
 using Service.Repositories;
-// using Service.Blog;
-// using Service.Draft;
-using Service.Repositories;
 using Service.Security;
+using FluentValidation.AspNetCore;
+using Service.DTO.Board;
+ 
+using Service.DTO.Game;
+using Service.DTO.Player;
+using Service.DTO.Transaction;
+ 
 using Service.Services;
-using OpenApiSecurityRequirement = NSwag.OpenApiSecurityRequirement;
-using OpenApiSecurityScheme = NSwag.OpenApiSecurityScheme;
+ 
+using Service.Validators;
+using Service.Validators.Board;
 
 namespace Api;
 
@@ -48,7 +52,7 @@ public class Program
         // builder.Services.AddScoped<IRepository<Comment>, CommentRepository>();
         #endregion
 
-        #region  
+          
         builder
             .Services.AddIdentityApiEndpoints<User>()
             .AddRoles<IdentityRole>()
@@ -75,14 +79,29 @@ public class Program
                 .RequireAuthenticatedUser()
                 .Build();
         });
+        
+        #region FluentValidation
+         
+        builder.Services.AddFluentValidationAutoValidation()
+            .AddFluentValidationClientsideAdapters();
+        builder.Services.AddValidatorsFromAssemblyContaining<ServiceAssembly>();
+        
+        builder.Services.AddScoped<IValidator<CreatePlayerDto>, CreatePlayerDtoValidator>();
+        builder.Services.AddScoped<IValidator<UpdatePlayerDto>, UpdatePlayerDtoValidator>();
+        builder.Services.AddScoped<IValidator<CreateGameDto>, CreateGameDtoValidator>();
+        builder.Services.AddScoped<IValidator<UpdateGameDto>, UpdateGameDtoValidator>();
+        builder.Services.AddScoped<IValidator<CreateBoardDto>, CreateBoardDtoValidator>();
+        builder.Services.AddScoped<IValidator<CreateTransactionDto>, CreateTransactionDtoValidator>();
+        builder.Services.AddScoped<IValidator<UpdateTransactionDto>, UpdateTransactionDtoValidator>();
         #endregion
 
         #region Services
         builder.Services.AddValidatorsFromAssemblyContaining<ServiceAssembly>();
         builder.Services.AddScoped<IPlayerService, PlayerService>();
-        // builder.Services.AddScoped<IGameService, GameService>();
-        // builder.Services.AddScoped<IBoardService, BoardService>();
-         
+        builder.Services.AddScoped<IGameService, GameService>();
+        builder.Services.AddScoped<ITransactionService, TransactionService>();
+         builder.Services.AddScoped<IBoardService, BoardService>();
+         builder.Services.AddScoped<IWinnerService, WinnerService>();
         #endregion
 
         #region Swagger

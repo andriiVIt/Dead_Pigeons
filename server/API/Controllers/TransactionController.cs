@@ -1,69 +1,62 @@
-using DataAccess;
-using DataAccess.models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Service.Interfaces;
+using Service.DTO.Transaction;
 
-namespace Api.Controllers;
+namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class TransactionController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly ITransactionService _service;
 
-    public TransactionController(AppDbContext context)
+    public TransactionController(ITransactionService service)
     {
-        _context = context;
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetTransactions()
-    {
-        var transactions = await _context.Transactions.ToListAsync();
-        return Ok(transactions);
-    }
-
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetTransaction(Guid id)
-    {
-        var transaction = await _context.Transactions.FindAsync(id);
-        if (transaction == null)
-            return NotFound();
-        return Ok(transaction);
+        _service = service;
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateTransaction([FromBody] Transaction transaction)
+    public ActionResult<GetTransactionDto> CreateTransaction(CreateTransactionDto createTransactionDto)
     {
-        await _context.Transactions.AddAsync(transaction);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetTransaction), new { id = transaction.Id }, transaction);
+        var transaction = _service.CreateTransaction(createTransactionDto);
+        return Ok(transaction);
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateTransaction(Guid id, [FromBody] Transaction updatedTransaction)
+    public ActionResult<GetTransactionDto> UpdateTransaction(Guid id, UpdateTransactionDto updateTransactionDto)
     {
-        var transaction = await _context.Transactions.FindAsync(id);
+        var transaction = _service.UpdateTransaction(id, updateTransactionDto);
+        return Ok(transaction);
+    }
+
+    [HttpGet("{id:guid}")]
+    public ActionResult<GetTransactionDto> GetTransactionById(Guid id)
+    {
+        var transaction = _service.GetTransactionById(id);
         if (transaction == null)
+        {
             return NotFound();
+        }
 
-        transaction.Amount = updatedTransaction.Amount;
-        transaction.MobilePayTransactionId = updatedTransaction.MobilePayTransactionId;
-        transaction.PlayerId = updatedTransaction.PlayerId;
+        return Ok(transaction);
+    }
 
-        await _context.SaveChangesAsync();
-        return NoContent();
+    [HttpGet]
+    public ActionResult<List<GetTransactionDto>> GetAllTransactions(int limit = 10, int startAt = 0)
+    {
+        var transactions = _service.GetAllTransactions(limit, startAt);
+        return Ok(transactions);
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteTransaction(Guid id)
+    public ActionResult DeleteTransaction(Guid id)
     {
-        var transaction = await _context.Transactions.FindAsync(id);
-        if (transaction == null)
+        var success = _service.DeleteTransaction(id);
+        if (!success)
+        {
             return NotFound();
+        }
 
-        _context.Transactions.Remove(transaction);
-        await _context.SaveChangesAsync();
         return NoContent();
     }
 }

@@ -1,13 +1,13 @@
-using DataAccess.models;
-using Service.Board;
+using Service.DTO.Board;
+using Service.DTO.Board;
 
 namespace Service.Interfaces;
 
 public interface IBoardService
 {
-    Task<IEnumerable<GetBoardDto>> GetAllAsync();
-    Task<GetBoardDto?> GetByIdAsync(Guid id);
-    Task<GetBoardDto> CreateAsync(CreateBoardDto dto);
-    // Task<bool> UpdateAsync(Guid id, UpdateBoardDto dto);
-    Task<bool> DeleteAsync(Guid id);
+    GetBoardDto CreateBoard(CreateBoardDto dto);
+    GetBoardDto UpdateBoard(Guid id, UpdateBoardDto dto);
+    GetBoardDto? GetBoardById(Guid id);
+    List<GetBoardDto> GetAllBoards(int limit, int startAt);
+    bool DeleteBoard(Guid id);
 }

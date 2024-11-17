@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Service.Auth.Dto;
+namespace Service.DTO.Auth.Dto;
 
 public record RegisterRequest(string Email, string Password, string Name);
 
