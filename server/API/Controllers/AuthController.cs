@@ -71,15 +71,18 @@ public class AuthController : ControllerBase
         
     }
 
-    // [HttpGet]
-    // [Route("userinfo")]
-    // public async Task<AuthUserInfo> UserInfo([FromServices] UserManager<User> userManager)
-    // {
-    //     var username = (HttpContext.User.Identity?.Name) ?? throw new AuthenticationError();
-    //     var user = await userManager.FindByNameAsync(username) ?? throw new AuthenticationError();
-    //     var roles = await userManager.GetRolesAsync(user);
-    //     var isAdmin = roles.Contains(Role.Admin);
-    //     var canPublish = roles.Contains(Role.Editor) || isAdmin;
-    //     return new AuthUserInfo(username, isAdmin, canPublish);
-    // }
+    [HttpGet]
+    [Route("userinfo")]
+    public async Task<AuthUserInfo> UserInfo([FromServices] UserManager<User> userManager)
+    {
+        var username = (HttpContext.User.Identity?.Name) ?? throw new AuthenticationError();
+        var user = await userManager.FindByNameAsync(username) ?? throw new AuthenticationError();
+        var roles = await userManager.GetRolesAsync(user);
+
+        // Перевірка ролей
+        var isAdmin = roles.Contains(Role.Admin);
+        var isPlayer = roles.Contains(Role.Player);
+
+        return new AuthUserInfo(username, isAdmin, isPlayer);
+    }
 }
