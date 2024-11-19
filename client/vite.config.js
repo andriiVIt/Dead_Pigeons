@@ -15,7 +15,7 @@ export default defineConfig({
         viteSingleFile({useRecommendedBuildConfig: false})
     ],
     server: {
-        port: 4200
+        port: 5001
     },
 
     css: {

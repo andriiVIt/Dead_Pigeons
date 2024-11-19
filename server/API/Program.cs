@@ -50,6 +50,15 @@ public class Program
         builder.Services.AddScoped<IRepository<User>, UserRepository>();
         // builder.Services.AddScoped<IRepository<Post>, PostRepository>();
         // builder.Services.AddScoped<IRepository<Comment>, CommentRepository>();
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowFrontend", policy =>
+            {
+                policy.WithOrigins("http://localhost:5001")  
+                    .AllowAnyMethod()  
+                    .AllowAnyHeader();  
+            });
+        });
         #endregion
 
           
@@ -177,6 +186,7 @@ public class Program
         // });
         app.UseHttpsRedirection();
         // app.MapIdentityApi<User>();
+        app.UseCors("AllowFrontend");
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
