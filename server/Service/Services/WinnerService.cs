@@ -1,10 +1,10 @@
 using DataAccess;
-using DataAccess.models;
+ 
 using Microsoft.EntityFrameworkCore;
-using Service.DTO.Game;
+ 
 using Service.Interfaces;
 using Service.DTO.Winner;
-using DataAccess.models;
+ 
 namespace Service.Services;
 
 public class WinnerService : IWinnerService

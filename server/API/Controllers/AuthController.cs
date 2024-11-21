@@ -1,5 +1,5 @@
  
-using DataAccess.Entities;
+
 using DataAccess.models;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -46,20 +46,35 @@ public class AuthController : ControllerBase
     public async Task<RegisterResponse> Register(
         IOptions<AppOptions> options,
         [FromServices] UserManager<User> userManager,
+        [FromServices] IEmailSender<User> emailSender,
         [FromServices] IValidator<RegisterRequest> validator,
         [FromBody] RegisterRequest data
     )
     {
         await validator.ValidateAndThrowAsync(data);
-        var user = new User { Email = data.Email, UserName = data.Email };
+
+        var user = new User { UserName = data.Email, Email = data.Email };
         var result = await userManager.CreateAsync(user, data.Password);
         if (!result.Succeeded)
         {
-            throw new ValidationError(result.Errors.ToDictionary(x => x.Code, x => new [] {x.Description}));
+            throw new ValidationError(
+                result.Errors.ToDictionary(x => x.Code, x => new[] { x.Description })
+            );
         }
-         
         await userManager.AddToRoleAsync(user, Role.Player);
-         return new RegisterResponse(user.Email, user.UserName);
+        
+        var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+
+        var qs = new Dictionary<string, string?> { { "token", token }, { "email", user.Email } };
+        var confirmationLink = new UriBuilder(options.Value.Address)
+        {
+            Path = "/api/auth/confirm",
+            Query = QueryString.Create(qs).Value
+        }.Uri.ToString();
+
+        await emailSender.SendConfirmationLinkAsync(user, user.Email, confirmationLink);
+
+        return new RegisterResponse(Email: user.Email, Name: user.UserName);
     }
 
     [HttpPost]
@@ -85,4 +100,75 @@ public class AuthController : ControllerBase
 
         return new AuthUserInfo(username, isAdmin, isPlayer);
     }
+    [HttpGet]
+    [Route("confirm")]
+    [AllowAnonymous]
+    public async Task<IResult> ConfirmEmail(
+        [FromServices] UserManager<User> userManager,
+        string token,
+        string email
+    )
+    {
+        var user = await userManager.FindByEmailAsync(email) ?? throw new AuthenticationError();
+        var result = await userManager.ConfirmEmailAsync(user, token);
+        if (!result.Succeeded)
+            throw new AuthenticationError();
+        return Results.Content("<h1>Email confirmed</h1>", "text/html", statusCode: 200);
+    }
+    
+    
+    [HttpPost]
+    [Route("password-reset/initiate")]
+    [AllowAnonymous]
+    public async Task<IResult> InitiatePasswordReset(
+        [FromServices] UserManager<User> userManager,
+        [FromServices] IValidator<InitPasswordResetRequest> validator,
+        [FromServices] IEmailSender<User> emailSender,
+        [FromBody] InitPasswordResetRequest data)
+    {
+        await validator.ValidateAndThrowAsync(data);
+
+        var user = await userManager.FindByEmailAsync(data.Email);
+        if (user == null)
+        {
+            return Results.NotFound(new { Message = "User not found" });
+        }
+
+        var resetToken = await userManager.GeneratePasswordResetTokenAsync(user);
+        var resetLink = Url.Action(
+            "ResetPassword",
+            "Auth",
+            new { token = resetToken, email = user.Email },
+            Request.Scheme
+        );
+
+        await emailSender.SendPasswordResetLinkAsync(user, user.Email, resetLink);
+
+        return Results.Ok(new { Message = "Password reset email sent" });
+    } 
+    [HttpPost]
+    [Route("password-reset")]
+    [AllowAnonymous]
+    public async Task<IResult> ResetPassword(
+        [FromServices] UserManager<User> userManager,
+        [FromServices] IValidator<PasswordResetRequest> validator,
+        [FromBody] PasswordResetRequest data)
+    {
+        await validator.ValidateAndThrowAsync(data);
+
+        var user = await userManager.FindByEmailAsync(data.Email);
+        if (user == null)
+        {
+            return Results.NotFound(new { Message = "User not found" });
+        }
+
+        var result = await userManager.ResetPasswordAsync(user, data.Token, data.NewPassword);
+        if (!result.Succeeded)
+        {
+            return Results.BadRequest(new { Errors = result.Errors.Select(e => e.Description) });
+        }
+
+        return Results.Ok(new { Message = "Password has been reset successfully" });
+    }
+
 }

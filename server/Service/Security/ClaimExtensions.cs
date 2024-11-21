@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using DataAccess.Entities;
+using DataAccess.models;
 
 namespace Service.Security;
 

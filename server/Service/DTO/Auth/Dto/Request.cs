@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Service.DTO.Auth.Dto;
+  
 
 public record RegisterRequest(string Email, string Password, string Name);
 
@@ -22,5 +22,26 @@ public class LoginRequestValidator : AbstractValidator<LoginRequest>
     {
         RuleFor(x => x.Email).NotEmpty();
         RuleFor(x => x.Password).NotEmpty();
+    }
+}
+
+public record InitPasswordResetRequest(string Email);
+
+public class InitPasswordResetRequestValidator : AbstractValidator<InitPasswordResetRequest>
+{
+    public InitPasswordResetRequestValidator()
+    {
+        RuleFor(x => x.Email).NotEmpty().EmailAddress();
+    }
+}
+public record PasswordResetRequest(string Email, string Token, string NewPassword);
+
+public class PasswordResetRequestValidator : AbstractValidator<PasswordResetRequest>
+{
+    public PasswordResetRequestValidator()
+    {
+        RuleFor(x => x.Email).NotEmpty();
+        RuleFor(x => x.Token).NotEmpty();
+        RuleFor(x => x.NewPassword).NotEmpty();
     }
 }

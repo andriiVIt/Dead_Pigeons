@@ -1,5 +1,5 @@
 using Service.DTO.Board;
-using Service.DTO.Board;
+ 
 
 namespace Service.Interfaces;
 

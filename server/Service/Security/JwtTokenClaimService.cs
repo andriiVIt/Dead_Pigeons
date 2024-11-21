@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using DataAccess.Entities;
+using DataAccess.models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
