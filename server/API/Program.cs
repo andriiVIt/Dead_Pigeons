@@ -1,6 +1,6 @@
 using Api.Misc;
 using DataAccess;
-using DataAccess.Entities;
+using DataAccess.models;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -81,6 +81,7 @@ public class Program
                 o.TokenValidationParameters = JwtTokenClaimService.ValidationParameters(options);
             });
         builder.Services.AddScoped<ITokenClaimsService, JwtTokenClaimService>();
+        builder.Services.AddSingleton<IEmailSender<User>, AppEmailSender>();
         builder.Services.AddAuthorization(options =>
         {
             options.FallbackPolicy = new AuthorizationPolicyBuilder()
