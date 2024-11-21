@@ -80,8 +80,7 @@ public class Program
             {
                 o.TokenValidationParameters = JwtTokenClaimService.ValidationParameters(options);
             });
-        builder.Services.AddScoped<ITokenClaimsService, JwtTokenClaimService>();
-        builder.Services.AddSingleton<IEmailSender<User>, AppEmailSender>();
+       
         builder.Services.AddAuthorization(options =>
         {
             options.FallbackPolicy = new AuthorizationPolicyBuilder()
@@ -89,6 +88,9 @@ public class Program
                 .RequireAuthenticatedUser()
                 .Build();
         });
+        builder.Services.AddScoped<ITokenClaimsService, JwtTokenClaimService>();
+        builder.Services.AddSingleton<IEmailSender<User>, AppEmailSender>();
+        
         
         #region FluentValidation
          
