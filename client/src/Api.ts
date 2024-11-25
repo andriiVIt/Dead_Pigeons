@@ -37,14 +37,6 @@ export interface CreateGameDto {
   winningSequence?: number[] | null;
 }
 
-export interface CreatePlayerDto {
-  name?: string | null;
-  /** @format double */
-  balance?: number;
-  isActive?: boolean;
-  userId?: string | null;
-}
-
 export interface CreateTransactionDto {
   /** @format uuid */
   playerId?: string;
@@ -107,10 +99,6 @@ export interface GetWinnerDto {
   gameStartDate?: string;
 }
 
-export interface InitPasswordResetRequest {
-  email?: string | null;
-}
-
 export interface LoginRequest {
   email?: string | null;
   password?: string | null;
@@ -118,12 +106,6 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   jwt?: string | null;
-}
-
-export interface PasswordResetRequest {
-  email?: string | null;
-  token?: string | null;
-  newPassword?: string | null;
 }
 
 export interface RegisterRequest {
@@ -399,42 +381,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags Auth
-     * @name AuthPasswordResetInitiateCreate
-     * @request POST:/api/auth/password-reset/initiate
-     * @secure
-     */
-    authPasswordResetInitiateCreate: (data: InitPasswordResetRequest, params: RequestParams = {}) =>
-      this.request<void, any>({
-        path: `/api/auth/password-reset/initiate`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Auth
-     * @name AuthPasswordResetCreate
-     * @request POST:/api/auth/password-reset
-     * @secure
-     */
-    authPasswordResetCreate: (data: PasswordResetRequest, params: RequestParams = {}) =>
-      this.request<void, any>({
-        path: `/api/auth/password-reset`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
      * @tags Board
      * @name BoardCreate
      * @request POST:/api/Board
@@ -661,57 +607,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Player
-     * @name PlayerCreate
-     * @request POST:/api/Player
-     * @secure
-     */
-    playerCreate: (data: CreatePlayerDto, params: RequestParams = {}) =>
-      this.request<GetPlayerDto, any>({
-        path: `/api/Player`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Player
-     * @name PlayerList
-     * @request GET:/api/Player
-     * @secure
-     */
-    playerList: (
-      query?: {
-        /**
-         * @format int32
-         * @default 10
-         */
-        limit?: number;
-        /**
-         * @format int32
-         * @default 0
-         */
-        startAt?: number;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<GetPlayerDto[], any>({
-        path: `/api/Player`,
-        method: "GET",
-        query: query,
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Player
      * @name PlayerUpdate
      * @request PUT:/api/Player/{id}
      * @secure
@@ -757,6 +652,38 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/Player/${id}`,
         method: "DELETE",
         secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Player
+     * @name PlayerList
+     * @request GET:/api/Player
+     * @secure
+     */
+    playerList: (
+      query?: {
+        /**
+         * @format int32
+         * @default 10
+         */
+        limit?: number;
+        /**
+         * @format int32
+         * @default 0
+         */
+        startAt?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<GetPlayerDto[], any>({
+        path: `/api/Player`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
         ...params,
       }),
 
