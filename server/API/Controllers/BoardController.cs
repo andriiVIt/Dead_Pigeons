@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Service.DTO.Board;
-using Service.DTO.Board;
+
 using Service.Interfaces;
 
 namespace Api.Controllers;

@@ -1,15 +1,13 @@
-namespace Api.Misc;
-
-
 using System.Net;
 using System.Net.Mail;
-
 using DataAccess.models;
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using RazorLight;
 using Service;
+
+namespace Api.Misc;
+
 public record EmailModel(User User, string Email, string CodeOrLink);
 
 public class AppEmailSender(IOptions<AppOptions> options, ILogger<AppEmailSender> logger)
@@ -18,12 +16,12 @@ public class AppEmailSender(IOptions<AppOptions> options, ILogger<AppEmailSender
     private readonly AppOptions _options = options.Value;
     private readonly ILogger _logger = logger;
     private readonly RazorLightEngine engine = new RazorLightEngineBuilder()
-        .UseFileSystemProject("/Users/andriisavchenko/Desktop/ Dead Pigeons /server/API/Emails")
+        .UseEmbeddedResourcesProject(typeof(AppEmailSender).Assembly)
         .UseMemoryCachingProvider()
         .UseOptions(new RazorLightOptions() { EnableDebugMode = true })
         .Build();
-
-    public async Task SendConfirmationLinkAsync(User user, string email, string confirmationLink) =>
+    
+public async Task SendConfirmationLinkAsync(User user, string email, string confirmationLink) =>
     await RenderAndSend(
         email,
         "Confirm your email",
@@ -61,7 +59,14 @@ public async Task SendPasswordResetLinkAsync(User user, string email, string res
 
     public async Task<string> RenderTemplateAsync<TModel>(string template, TModel model)
     {
-        return await engine.CompileRenderAsync($"{template}.cshtml", model);
+        var resources = typeof(AppEmailSender).Assembly.GetManifestResourceNames();
+        foreach (var resource in resources)
+        {
+            Console.WriteLine(resource); // Друкує всі доступні ресурси
+        }
+        Console.WriteLine($"Rendering template: API.Emails.{template}.cshtml");
+        // Виправлення ключа
+        return await engine.CompileRenderAsync($"API.Emails.{template}.cshtml", model);
     }
 
     public async Task SendEmailAsync(string toEmail, string subject, string message)

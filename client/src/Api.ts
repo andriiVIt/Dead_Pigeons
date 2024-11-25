@@ -107,6 +107,10 @@ export interface GetWinnerDto {
   gameStartDate?: string;
 }
 
+export interface InitPasswordResetRequest {
+  email?: string | null;
+}
+
 export interface LoginRequest {
   email?: string | null;
   password?: string | null;
@@ -114,6 +118,12 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   jwt?: string | null;
+}
+
+export interface PasswordResetRequest {
+  email?: string | null;
+  token?: string | null;
+  newPassword?: string | null;
 }
 
 export interface RegisterRequest {
@@ -197,7 +207,7 @@ export class HttpClient<SecurityDataType = unknown> {
   private format?: ResponseType;
 
   constructor({ securityWorker, secure, format, ...axiosConfig }: ApiConfig<SecurityDataType> = {}) {
-    this.instance = axios.create({ ...axiosConfig, baseURL: axiosConfig.baseURL || "http://localhost:5000" });
+    this.instance = axios.create({ ...axiosConfig, baseURL: axiosConfig.baseURL || "" });
     this.secure = secure;
     this.format = format;
     this.securityWorker = securityWorker;
@@ -383,6 +393,42 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "GET",
         query: query,
         secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Auth
+     * @name AuthPasswordResetInitiateCreate
+     * @request POST:/api/auth/password-reset/initiate
+     * @secure
+     */
+    authPasswordResetInitiateCreate: (data: InitPasswordResetRequest, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/api/auth/password-reset/initiate`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Auth
+     * @name AuthPasswordResetCreate
+     * @request POST:/api/auth/password-reset
+     * @secure
+     */
+    authPasswordResetCreate: (data: PasswordResetRequest, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/api/auth/password-reset`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         ...params,
       }),
 
