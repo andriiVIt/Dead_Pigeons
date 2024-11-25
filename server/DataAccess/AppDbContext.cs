@@ -69,7 +69,13 @@ namespace DataAccess
                 .Property(p => p.Balance)
                 .HasColumnType("decimal(10, 2)")
                 .HasDefaultValue(0);
-
+            
+            
+            modelBuilder.Entity<Player>()
+                .HasOne<User>()
+                .WithMany()
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Game>()
                 .Property(g => g.WinningSequence)
                 .HasColumnType("integer[]"); // PostgreSQL array type

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service;
 using Service.Interfaces;
@@ -15,14 +16,14 @@ public class PlayerController : ControllerBase
     {
         _service = service;
     }
-
-    [HttpPost]
-    [Route("")]
-    public ActionResult<GetPlayerDto> CreatePlayer([FromBody] CreatePlayerDto createPlayerDto)
-    {
-        var player = _service.CreatePlayer(createPlayerDto);
-        return CreatedAtAction(nameof(GetPlayerById), new { id = player.Id }, player);
-    }
+    // [Authorize(Roles = "Admin")]
+    // [HttpPost]
+    // [Route("")]
+    // public ActionResult<GetPlayerDto> CreatePlayer([FromBody] CreatePlayerDto createPlayerDto)
+    // {
+    //     var player = _service.CreatePlayer(createPlayerDto);
+    //     return CreatedAtAction(nameof(GetPlayerById), new { id = player.Id }, player);
+    // }
 
     [HttpPut]
     [Route("{id:guid}")]
@@ -53,14 +54,18 @@ public class PlayerController : ControllerBase
     }
 
     [HttpDelete]
+     
     [Route("{id:guid}")]
-    public ActionResult DeletePlayer(Guid id)
+    public async Task<IActionResult> DeletePlayer(Guid id)
     {
+        // Використовуємо сервіс для видалення гравця
         var success = _service.DeletePlayer(id);
+
         if (!success)
         {
-            return NotFound();
+            return NotFound(); // Якщо гравця не знайдено
         }
-        return NoContent();
+
+        return NoContent(); // Успішне видалення
     }
 }

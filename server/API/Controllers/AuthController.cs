@@ -1,5 +1,6 @@
  
 
+using DataAccess;
 using DataAccess.models;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -41,18 +42,22 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [Route("register")]
-    [AllowAnonymous]
+     
     public async Task<RegisterResponse> Register(
         IOptions<AppOptions> options,
         [FromServices] UserManager<User> userManager,
         [FromServices] IEmailSender<User> emailSender,
         [FromServices] IValidator<RegisterRequest> validator,
+        [FromServices] AppDbContext dbContext, // Додано контекст бази даних
         [FromBody] RegisterRequest data
     )
     {
+        // Валідація вхідних даних
         await validator.ValidateAndThrowAsync(data);
 
+        // Створення користувача
         var user = new User { UserName = data.Email, Email = data.Email };
         var result = await userManager.CreateAsync(user, data.Password);
         if (!result.Succeeded)
@@ -61,8 +66,11 @@ public class AuthController : ControllerBase
                 result.Errors.ToDictionary(x => x.Code, x => new[] { x.Description })
             );
         }
+
+        // Додавання ролі для користувача
         await userManager.AddToRoleAsync(user, Role.Player);
 
+        // Генерація токена підтвердження email
         var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
         var qs = new Dictionary<string, string?> { { "token", token }, { "email", user.Email } };
@@ -72,7 +80,19 @@ public class AuthController : ControllerBase
             Query = QueryString.Create(qs).Value
         }.Uri.ToString();
 
+        // Надсилання листа з підтвердженням
         await emailSender.SendConfirmationLinkAsync(user, user.Email, confirmationLink);
+
+        // Додавання запису в таблицю Players
+        var player = new Player
+        {
+            UserId = user.Id,
+            Name = data.Name ?? user.UserName, // Ім'я можна взяти з даних або email
+            Balance = 0, // Початковий баланс гравця
+            IsActive = true // За замовчуванням гравець активний
+        };
+        dbContext.Players.Add(player);
+        await dbContext.SaveChangesAsync(); // Збереження змін у базі даних
 
         return new RegisterResponse(Email: user.Email, Name: user.UserName);
     }

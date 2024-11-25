@@ -10,38 +10,38 @@ namespace Service;
 public class PlayerService : IPlayerService
 {
     private readonly ILogger<PlayerService> _logger;
-    private readonly IValidator<CreatePlayerDto> _createPlayerValidator;
+    // private readonly IValidator<CreatePlayerDto> _createPlayerValidator;
     private readonly IValidator<UpdatePlayerDto> _updatePlayerValidator;
     private readonly AppDbContext _context;
 
     public PlayerService(
         ILogger<PlayerService> logger,
-        IValidator<CreatePlayerDto> createPlayerValidator,
+        // IValidator<CreatePlayerDto> createPlayerValidator,
         IValidator<UpdatePlayerDto> updatePlayerValidator,
         AppDbContext context)
     {
         _logger = logger;
-        _createPlayerValidator = createPlayerValidator;
+        // _createPlayerValidator = createPlayerValidator;
         _updatePlayerValidator = updatePlayerValidator;
         _context = context;
     }
 
-    public GetPlayerDto CreatePlayer(CreatePlayerDto createPlayerDto)
-    {
-        _createPlayerValidator.ValidateAndThrow(createPlayerDto);
-
-        if (!_context.Users.Any(u => u.Id == createPlayerDto.UserId))
-        {
-            throw new ArgumentException("UserId does not exist.");
-        }
-
-        var player = CreatePlayerDto.ToEntity(createPlayerDto);
-
-        _context.Players.Add(player);
-        _context.SaveChanges();
-
-        return GetPlayerDto.FromEntity(player);
-    }
+    // public GetPlayerDto CreatePlayer(CreatePlayerDto createPlayerDto)
+    // {
+    //     _createPlayerValidator.ValidateAndThrow(createPlayerDto);
+    //
+    //     if (!_context.Users.Any(u => u.Id == createPlayerDto.UserId))
+    //     {
+    //         throw new ArgumentException("UserId does not exist.");
+    //     }
+    //
+    //     var player = CreatePlayerDto.ToEntity(createPlayerDto);
+    //
+    //     _context.Players.Add(player);
+    //     _context.SaveChanges();
+    //
+    //     return GetPlayerDto.FromEntity(player);
+    // }
 
     public GetPlayerDto UpdatePlayer(Guid id, UpdatePlayerDto updatePlayerDto)
     {
@@ -78,14 +78,28 @@ public class PlayerService : IPlayerService
 
     public bool DeletePlayer(Guid id)
     {
+        // Знаходимо гравця за ID
         var player = _context.Players.FirstOrDefault(p => p.Id == id);
         if (player == null)
         {
-            return false;
+            return false; // Якщо гравця не знайдено
         }
 
+        // Отримуємо UserId гравця
+        var userId = player.UserId;
+
+        // Видаляємо гравця
         _context.Players.Remove(player);
+
+        // Знаходимо і видаляємо відповідного користувача з AspNetUsers
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+        if (user != null)
+        {
+            _context.Users.Remove(user);
+        }
+
+        // Зберігаємо зміни
         _context.SaveChanges();
-        return true;
+        return true; // Успішно видалено
     }
 }

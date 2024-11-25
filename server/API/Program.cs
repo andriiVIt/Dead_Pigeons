@@ -96,7 +96,7 @@ public class Program
             .AddFluentValidationClientsideAdapters();
         builder.Services.AddValidatorsFromAssemblyContaining<ServiceAssembly>();
         
-        builder.Services.AddScoped<IValidator<CreatePlayerDto>, CreatePlayerDtoValidator>();
+        // builder.Services.AddScoped<IValidator<CreatePlayerDto>, CreatePlayerDtoValidator>();
         builder.Services.AddScoped<IValidator<UpdatePlayerDto>, UpdatePlayerDtoValidator>();
         builder.Services.AddScoped<IValidator<CreateGameDto>, CreateGameDtoValidator>();
         builder.Services.AddScoped<IValidator<UpdateGameDto>, UpdateGameDtoValidator>();
