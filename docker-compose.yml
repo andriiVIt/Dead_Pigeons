@@ -12,6 +12,13 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./backup.dump:/docker-entrypoint-initdb.d/backup.dump
+    command: >
+      sh -c "
+      if [ -f /docker-entrypoint-initdb.d/backup.dump ]; then
+        pg_restore -U $POSTGRES_USER -d $POSTGRES_DB /docker-entrypoint-initdb.d/backup.dump;
+      fi
+      "
 
   mailcatcher:
     image: dockage/mailcatcher
