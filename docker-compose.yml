@@ -13,12 +13,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    command: >
-      sh -c "
-      if [ -f /docker-entrypoint-initdb.d/init.sql ]; then
-        pg_restore -U $POSTGRES_USER -d $POSTGRES_DB /docker-entrypoint-initdb.d/init.sql;
-      fi
-      "
 
   mailcatcher:
     image: dockage/mailcatcher
