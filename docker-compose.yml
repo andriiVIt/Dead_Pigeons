@@ -12,11 +12,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backup.dump:/docker-entrypoint-initdb.d/backup.dump
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     command: >
       sh -c "
-      if [ -f /docker-entrypoint-initdb.d/backup.dump ]; then
-        pg_restore -U $POSTGRES_USER -d $POSTGRES_DB /docker-entrypoint-initdb.d/backup.dump;
+      if [ -f /docker-entrypoint-initdb.d/init.sql ]; then
+        pg_restore -U $POSTGRES_USER -d $POSTGRES_DB /docker-entrypoint-initdb.d/init.sql;
       fi
       "
 
