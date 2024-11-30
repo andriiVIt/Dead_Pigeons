@@ -65,7 +65,12 @@ public class PlayerService : IPlayerService
 
     public List<GetPlayerDto> GetAllPlayers(int limit, int startAt)
     {
-        var players = _context.Players.OrderBy(p => p.Id).Skip(startAt).Take(limit).ToList();
+        var players = _context.Players
+            .Include(p => p.User) // Включаємо дані користувача
+            .OrderBy(p => p.Id)
+            .Skip(startAt)
+            .Take(limit)
+            .ToList();
 
         return players.Select(GetPlayerDto.FromEntity).ToList();
     }

@@ -38,7 +38,15 @@ export const useAuth = () => {
         const response = await http.authLoginCreate(credentials);
         const data = response.data;
         setJwt(data.jwt!);
-        navigate("/");
+
+        const userInfoResponse = await http.authUserinfoList();
+        const userInfo = userInfoResponse.data;
+
+        if (userInfo.isAdmin) {
+            navigate("/admin");
+        } else {
+            navigate("/player");
+        }
     };
 
     const logout = async () => {

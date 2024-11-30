@@ -72,10 +72,11 @@ namespace DataAccess
             
             
             modelBuilder.Entity<Player>()
-                .HasOne<User>()
-                .WithMany()
+                .HasOne(p => p.User) // Гравець має посилання на користувача
+                .WithMany(u => u.Players) // Користувач має колекцію гравців
                 .HasForeignKey(p => p.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+                
             modelBuilder.Entity<Game>()
                 .Property(g => g.WinningSequence)
                 .HasColumnType("integer[]"); // PostgreSQL array type
