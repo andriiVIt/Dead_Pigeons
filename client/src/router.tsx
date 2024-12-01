@@ -18,7 +18,7 @@ import {ProtectedRoute} from "/src/components/ProtectedRoute.tsx";
 import PlayersPage from "/src/pages/Admin/PlayersPage.tsx";
 import GamePage from "/src/pages/Admin/GamePage.tsx";
 import TransactionPage from "/src/pages/Admin/TransactionPage.tsx";
-
+import GamesPage from "/src/pages/Player/GamesPage.tsx";
 const router = createBrowserRouter(
     createRoutesFromElements(
         <>
@@ -34,6 +34,7 @@ const router = createBrowserRouter(
             </Route>
             <Route element={<ProtectedRoute role="Player" />}>
                 <Route path="/player" element={<PlayerDashboard />} errorElement={<ErrorPage />} />
+                <Route path="/games" element={<GamesPage />} errorElement={<ErrorPage />} />
 
 
             </Route>
