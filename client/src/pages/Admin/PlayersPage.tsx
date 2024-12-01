@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import NavBarAdmin from "/src/components/adminComponents/NavBarAdmin.tsx";
+import EditPlayerModal from "/src/components/adminComponents/EditPlayerModal";
 import { useAtom } from "jotai";
 import {
     playerListAtom,
@@ -9,13 +10,15 @@ import {
 } from "/src/atoms/playerAtoms.ts";
 import { http } from "/src/http";
 import {useNavigate} from "react-router-dom";
+import {GetPlayerDto, UpdatePlayerDto} from "/src/Api.ts";
 
 const PlayersPage: React.FC = () => {
     const navigate = useNavigate();
     const [players, setPlayers] = useAtom(playerListAtom);
     const [isLoading, setIsLoading] = useAtom(isLoadingPlayersAtom);
     const [error, setError] = useAtom(playersErrorAtom);
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedPlayer, setSelectedPlayer] = useState<GetPlayerDto | null>(null);
     useEffect(() => {
         const fetchPlayers = async () => {
             setIsLoading(true);
@@ -47,19 +50,45 @@ const PlayersPage: React.FC = () => {
         }
     };
     const handleRegisterNewPlayer = () => {
-        navigate("/register-player"); // Перехід на сторінку реєстрації
+        navigate("/register-player");
+    };
+
+    const handleEdit = (player: GetPlayerDto) => {
+        setSelectedPlayer(player);
+        setIsModalOpen(true);
+    };
+
+    // Handle updating a player
+    const handleUpdatePlayer = async (updatedPlayer: UpdatePlayerDto) => {
+        if (!selectedPlayer) return;
+
+        try {
+            await http.playerUpdate(selectedPlayer.id!, updatedPlayer); // API call to update
+            setPlayers((prev) =>
+                prev.map((player) =>
+                    player.id === selectedPlayer.id ? { ...player, ...updatedPlayer } : player
+                )
+            );
+            setIsModalOpen(false);
+            alert("Player updated successfully!");
+        } catch (err) {
+            alert("Failed to update player.");
+            console.error(err);
+        }
     };
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-800 to-pink-600 relative text-white">
             <NavBarAdmin />
             <div className="container mx-auto p-4">
                 <h1 className="text-3xl font-bold text-center mb-6">Manage Players</h1>
-                <button
-                    className="bg-green-500 text-white px-4 py-2 rounded"
-                    onClick={handleRegisterNewPlayer}
-                >
-                    Register New Player
-                </button>
+                <div className="mb-4">
+                    <button
+                        className="bg-green-500 text-white px-4 py-2 rounded"
+                        onClick={handleRegisterNewPlayer}
+                    >
+                        Register New Player
+                    </button>
+                </div>
                 {isLoading && <p>Loading players...</p>}
                 {error && <p className="text-red-500">{error}</p>}
                 <table className="table-auto w-full bg-white text-black rounded shadow">
@@ -82,7 +111,7 @@ const PlayersPage: React.FC = () => {
                             <td className="px-4 py-2 border">
                                 <button
                                     className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
-                                    onClick={() => alert("Edit functionality coming soon!")}
+                                    onClick={() => handleEdit(player)}
                                 >
                                     Edit
                                 </button>
@@ -98,6 +127,13 @@ const PlayersPage: React.FC = () => {
                     </tbody>
                 </table>
             </div>
+            {/* Edit Player Modal */}
+            <EditPlayerModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                player={selectedPlayer}
+                onSubmit={handleUpdatePlayer}
+            />
         </div>
     );
 };

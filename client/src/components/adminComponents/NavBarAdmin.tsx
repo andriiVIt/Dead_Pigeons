@@ -1,7 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import {useAuth} from "/src/atoms/auth.ts";
 
 const NavBarAdmin: React.FC = () => {
+    const { logout } = useAuth(); // Отримуємо функцію logout із вашого атома
+
     return (
         <div className="navbar bg-base-100 w-full">
             <div className="navbar-start">
@@ -54,13 +57,13 @@ const NavBarAdmin: React.FC = () => {
                     </ul>
                 </div>
                 <Link to="/admin" className="btn btn-black text-xl">
-                    Dead Pigeons
+                    Dead Pigeons Lottery!
                 </Link>
             </div>
             <div className="navbar-center hidden lg:flex">
                 <ul
                     className="menu menu-horizontal px-1 text-black"
-                    style={{ gap: "250px" }}
+                    style={{gap: "250px"}}
                 >
                     <li>
                         <Link to="/admin/players" className="text-lg font-medium hover:text-blue-500 transition-colors">
@@ -73,7 +76,8 @@ const NavBarAdmin: React.FC = () => {
                         </Link>
                     </li>
                     <li>
-                        <Link to="/admin/transactions" className="text-lg font-medium hover:text-blue-500 transition-colors">
+                        <Link to="/admin/transactions"
+                              className="text-lg font-medium hover:text-blue-500 transition-colors">
                             Transactions
                         </Link>
                     </li>
@@ -90,7 +94,12 @@ const NavBarAdmin: React.FC = () => {
                 </ul>
             </div>
             <div className="navbar-end">
-                <a className="btn">Log out</a>
+                <button
+                    className="btn"
+                    onClick={logout}
+                >
+                    Log out
+                </button>
             </div>
         </div>
     );
