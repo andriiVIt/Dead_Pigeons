@@ -1,7 +1,9 @@
 import React, {FC} from 'react';
 import {Link} from "react-router-dom";
+import {useAuth} from "/src/atoms/auth.ts";
 
 const NavBarPlayer: FC = () => {
+    const { logout } = useAuth(); // Отримуємо функцію logout із вашого атома
     return (
         <div className="navbar bg-base-100 w-full">
             <div className="navbar-start">
@@ -82,7 +84,12 @@ const NavBarPlayer: FC = () => {
                 </ul>
             </div>
             <div className="navbar-end">
-                <a className="btn">Log out</a>
+                <button
+                    className="btn"
+                    onClick={logout}
+                >
+                    Log out
+                </button>
             </div>
         </div>
     );

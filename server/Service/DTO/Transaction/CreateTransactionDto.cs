@@ -6,14 +6,15 @@ public class CreateTransactionDto
     public decimal Amount { get; set; }
     public string MobilePayTransactionId { get; set; } = string.Empty;
 
-    public static  Transaction ToEntity(CreateTransactionDto dto)
+    public static  Transaction ToEntity(CreateTransactionDto сreateTransactionDto )
     {
         return new  Transaction
         {
             Id = Guid.NewGuid(),
-            PlayerId = dto.PlayerId,
-            Amount = dto.Amount,
-            MobilePayTransactionId = dto.MobilePayTransactionId
+            PlayerId = сreateTransactionDto.PlayerId,
+            Amount = сreateTransactionDto.Amount,
+            MobilePayTransactionId = сreateTransactionDto.MobilePayTransactionId,
+            TransactionDate = DateTime.UtcNow 
         };
     }
 }
