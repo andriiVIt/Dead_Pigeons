@@ -15,4 +15,5 @@ public class Player
     // Додати цю властивість
     public List<Board> Boards { get; set; } = new();
     public List<Transaction> Transactions { get; set; } = new();
+    
 }

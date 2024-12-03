@@ -83,6 +83,9 @@ export interface GetTransactionDto {
   /** @format double */
   amount?: number;
   mobilePayTransactionId?: string | null;
+  playerName?: string | null;
+    /** @format date-time */
+    transactionDate?: string; // Додайте це
 }
 
 export interface GetWinnerDto {
@@ -189,7 +192,7 @@ export class HttpClient<SecurityDataType = unknown> {
   private format?: ResponseType;
 
   constructor({ securityWorker, secure, format, ...axiosConfig }: ApiConfig<SecurityDataType> = {}) {
-    this.instance = axios.create({ ...axiosConfig, baseURL: axiosConfig.baseURL || "http://localhost:5000" });
+    this.instance = axios.create({ ...axiosConfig, baseURL: axiosConfig.baseURL || "http://localhost:5000/" });
     this.secure = secure;
     this.format = format;
     this.securityWorker = securityWorker;

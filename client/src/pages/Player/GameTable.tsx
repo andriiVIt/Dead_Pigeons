@@ -27,17 +27,13 @@ const GameTable: FC = () => {
     }
 
     return (
-        <div
-            className="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-800 to-pink-600 relative text-white">
-            <NavBarPlayer/>
-
-
+        <div className={'pt-10'}>
             <div>
                 <h2 className={"text-3xl font-bold text-white mb-6 text-center"}>Select your Numbers</h2>
-                <div className="grid grid-cols-4 gap-4 max-w-md mx-auto">
+                <div className="grid grid-cols-4 gap-4 max-w-4xl mx-auto">
                     {Array.from({length: 16}, (_, index) => index + 1).map((number) => (
                         <button key={number} onClick={() => toggleNumber(number)}
-                                className={`p-4 rounded-lg font-bold text-white text-lg transition-all 
+                                className={`py-12 rounded-lg font-bold text-white text-3xl transition-all 
                             ${selectedNumbers.includes(number)
                                     ? "bg-orange-500 hover:bg-orange-600"
                                     : "bg-gray-300 hover:bg-gray-400"}`}>
@@ -46,19 +42,15 @@ const GameTable: FC = () => {
                     ))}
                 </div>
                 <div className={'text-center mt-8'}>
-                    <p className="text-xl font-bold text-white">Price: {calculatePrice()}</p>
+                    <p className="text-4xl font-bold text-white">Price: {calculatePrice()}</p>
                     <button onClick={handleSubmit}
-                            className={'mt-4 px-6 py-2 bg-yellow-300 hover:bg-amber-400 text-white font-bold rounded-lg shadow-md'}>confirm
+                            className={'mt-4 px-6 py-6 text-3xl bg-purple-500 hover:bg-purple-800 text-white font-bold rounded-lg shadow-md transition-all'}>confirm
                     </button>
                 </div>
             </div>
-             
-            <div className="container mx-auto py-10 text-white text-center z-10">
-                <h1 className='text-3x1 font-bold'>Welcome to Dead Pigeons</h1>
-                <p className='mt-4'>Choose an option from the navbar </p>
-            </div>
+
         </div>
     );
 };
 
-            export default GameTable;
+export default GameTable;

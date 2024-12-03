@@ -9,5 +9,6 @@ public class UpdateTransactionDto
     {
         transaction.Amount = Amount;
         transaction.MobilePayTransactionId = MobilePayTransactionId;
+        transaction.TransactionDate = DateTime.UtcNow;
     }
 }

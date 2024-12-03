@@ -45,11 +45,11 @@ public class Program
             options
                 .UseNpgsql(connectionString)
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+                .EnableSensitiveDataLogging()
         );
         builder.Services.AddScoped<DbSeeder>();
         builder.Services.AddScoped<IRepository<User>, UserRepository>();
-        // builder.Services.AddScoped<IRepository<Post>, PostRepository>();
-        // builder.Services.AddScoped<IRepository<Comment>, CommentRepository>();
+        
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowFrontend", policy =>

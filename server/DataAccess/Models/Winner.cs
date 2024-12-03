@@ -7,7 +7,7 @@ public class Winner
     public Guid PlayerId { get; set; }
     public decimal PrizeAmount { get; set; }
 
-    // Навігаційні властивості
+    
     public Game Game { get; set; }
     public Player Player { get; set; }
 }

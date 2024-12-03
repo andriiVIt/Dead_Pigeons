@@ -19,9 +19,10 @@ import PlayersPage from "/src/pages/Admin/PlayersPage.tsx";
 import GamePage from "/src/pages/Admin/GamePage.tsx";
 import TransactionPage from "/src/pages/Admin/TransactionPage.tsx";
 import GamesPage from "/src/pages/Player/GamesPage.tsx";
+import BoardsPage from "/src/pages/Player/BoardsPage.tsx";
 const router = createBrowserRouter(
     createRoutesFromElements(
-        <>
+        <> <Route path={'/'} element={<Root />} errorElement={<ErrorPage />} id={'root'}>
             <Route path="/" element={<HomePage />} errorElement={<ErrorPage />} />
             <Route path="/login" element={<Login />} errorElement={<ErrorPage />} />
             <Route element={<ProtectedRoute role="Admin" />}>
@@ -35,9 +36,10 @@ const router = createBrowserRouter(
             <Route element={<ProtectedRoute role="Player" />}>
                 <Route path="/player" element={<PlayerDashboard />} errorElement={<ErrorPage />} />
                 <Route path="/games" element={<GamesPage />} errorElement={<ErrorPage />} />
-
+                <Route path="/boards" element={<BoardsPage />} errorElement={<ErrorPage />} />
 
             </Route>
+        </Route>
         </>
     ),
 );
