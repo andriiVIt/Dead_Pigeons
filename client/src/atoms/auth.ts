@@ -10,7 +10,7 @@ export const tokenStorage = createJSONStorage<string | null>(
     () => sessionStorage,
 );
 
-const jwtAtom = atomWithStorage<string | null>(TOKEN_KEY, null, tokenStorage);
+export const jwtAtom = atomWithStorage<string | null>(TOKEN_KEY, null, tokenStorage);
 
 const userInfoAtom = atom(async (get) => {
     // Create a dependency on 'token' atom
@@ -46,6 +46,7 @@ export const useAuth = () => {
             navigate("/admin");
         } else {
             navigate("/player");
+
         }
     };
 

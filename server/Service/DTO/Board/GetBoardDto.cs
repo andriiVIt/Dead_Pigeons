@@ -8,6 +8,7 @@ public class GetBoardDto
     public Guid PlayerId { get; set; }
     public Guid GameId { get; set; }
     public List<int> Numbers { get; set; } = new();
+    public decimal Price { get; set; } // Додаємо поле ціни
 
     public static GetBoardDto FromEntity(Board board)
     {
@@ -16,7 +17,8 @@ public class GetBoardDto
             Id = board.Id,
             PlayerId = board.PlayerId,
             GameId = board.GameId,
-            Numbers = board.Numbers
+            Numbers = board.Numbers,
+            Price = board.Price // Передаємо обчислену ціну
         };
     }
 }

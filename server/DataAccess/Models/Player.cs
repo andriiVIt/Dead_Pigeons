@@ -7,7 +7,7 @@ public class Player
     public Guid Id { get; set; }
     public string UserId { get; set; }
     public string Name { get; set; }
-    public decimal Balance { get; set; }
+    public decimal Balance { get; set; } = 0;
     public bool IsActive { get; set; }
 
     public User User { get; set; }

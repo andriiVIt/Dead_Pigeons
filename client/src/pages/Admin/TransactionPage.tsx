@@ -11,7 +11,9 @@ const TransactionPage: React.FC = () => {
     const [loading, setLoading] = useAtom(transactionsLoadingAtom);
     const [editTransactionId, setEditTransactionId] = useState<string | null>(null);
     const [editAmount, setEditAmount] = useState<number | null>(null);
-
+    // State for sorting
+    const [sortColumn, setSortColumn] = useState<string | null>(null);
+    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
     useEffect(() => {
         const fetchTransactions = async () => {
             try {
@@ -59,6 +61,30 @@ const TransactionPage: React.FC = () => {
             console.error("Error updating transaction:", error);
         }
     };
+    const handleSort = (column: string) => {
+        const direction = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
+        setSortColumn(column);
+        setSortDirection(direction);
+
+        const sortedTransactions = [...transactions].sort((a, b) => {
+            const aValue = a[column as keyof typeof a];
+            const bValue = b[column as keyof typeof b];
+
+            if (aValue === bValue) return 0;
+            if (aValue == null) return direction === "asc" ? -1 : 1;
+            if (bValue == null) return direction === "asc" ? 1 : -1;
+
+            return direction === "asc"
+                ? aValue > bValue
+                    ? 1
+                    : -1
+                : aValue > bValue
+                    ? -1
+                    : 1;
+        });
+
+        setTransactions(sortedTransactions);
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-800 to-pink-600 relative text-white">
@@ -76,13 +102,28 @@ const TransactionPage: React.FC = () => {
                     <p className="text-center text-lg">Loading transactions...</p>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="table-auto w-full text-left text-white border-collapse border border-gray-500">
+                        <table className="table-auto w-full text-left bg-white text-black rounded-lg shadow-lg border-collapse border border-gray-500">
                             <thead>
                             <tr>
-                                <th className="border border-gray-500 px-4 py-2">Player Name</th>
-                                <th className="border border-gray-500 px-4 py-2">Amount</th>
+                                <th
+                                    className="border border-gray-500 px-4 py-2 cursor-pointer"
+                                    onClick={() => handleSort("playerName")}
+                                >
+                                    Player Name {sortColumn === "playerName" && (sortDirection === "asc" ? "↑" : "↓")}
+                                </th>
+                                <th
+                                    className="border border-gray-500 px-4 py-2 cursor-pointer"
+                                    onClick={() => handleSort("amount")}
+                                >
+                                    Amount {sortColumn === "amount" && (sortDirection === "asc" ? "↑" : "↓")}
+                                </th>
                                 <th className="border border-gray-500 px-4 py-2">MobilePay Transaction ID</th>
-                                <th className="border border-gray-500 px-4 py-2">Transaction Date</th>
+                                <th
+                                    className="border border-gray-500 px-4 py-2 cursor-pointer"
+                                    onClick={() => handleSort("transactionDate")}
+                                >
+                                    Transaction Date {sortColumn === "transactionDate" && (sortDirection === "asc" ? "↑" : "↓")}
+                                </th>
                                 <th className="border border-gray-500 px-4 py-2">Actions</th>
                             </tr>
                             </thead>
@@ -92,21 +133,26 @@ const TransactionPage: React.FC = () => {
                                     <td className="border border-gray-500 px-4 py-2">{transaction.playerName || "Unknown"}</td>
                                     <td className="border border-gray-500 px-4 py-2">
                                         {editTransactionId === transaction.id ? (
-                                            <input
-                                                type="number"
-                                                className="text-black px-2 py-1 rounded"
-                                                value={editAmount ?? transaction.amount}
-                                                onChange={(e) => setEditAmount(Number(e.target.value))}
-                                            />
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="number"
+                                                    className="text-black px-2 py-1 rounded w-full"
+                                                    value={editAmount ?? transaction.amount}
+                                                    onChange={(e) => setEditAmount(Number(e.target.value))}
+                                                />
+                                                <span className="ml-2">DKK</span>
+                                            </div>
                                         ) : (
-                                            transaction.amount
+                                            `${transaction.amount} DKK`
                                         )}
                                     </td>
                                     <td className="border border-gray-500 px-4 py-2">
                                         {transaction.mobilePayTransactionId || "N/A"}
                                     </td>
                                     <td className="border border-gray-500 px-4 py-2">
-                                        {transaction.transactionDate ? new Date(transaction.transactionDate).toLocaleString() : "N/A"}
+                                        {transaction.transactionDate
+                                            ? new Date(transaction.transactionDate).toLocaleString()
+                                            : "N/A"}
                                     </td>
                                     <td className="border border-gray-500 px-4 py-2">
                                         {editTransactionId === transaction.id ? (

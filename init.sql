@@ -163,7 +163,8 @@ CREATE TABLE public."Boards" (
                                  "Id" uuid NOT NULL,
                                  "PlayerId" uuid NOT NULL,
                                  "GameId" uuid NOT NULL,
-                                 "Numbers" integer[] NOT NULL
+                                 "Numbers" integer[] NOT NULL,
+                                 "Price" numeric(10,2) DEFAULT 0.00 NOT NULL
 );
 
 
@@ -274,6 +275,7 @@ f8fc65e9-6554-4498-9f8e-d6f16d810039	0e41dd53-6c6e-406a-b2a8-f66430a05abe
 35646320-6836-47f8-8b08-3e399133ae78	0e41dd53-6c6e-406a-b2a8-f66430a05abe
 a3bafd54-77e9-4e33-9387-ae5608dd82aa	0e41dd53-6c6e-406a-b2a8-f66430a05abe
 45680645-c5e1-4982-a1d6-c0513008ae07	0e41dd53-6c6e-406a-b2a8-f66430a05abe
+75b09704-d8c9-4bcf-bf6c-cd2aefa1d571	0e41dd53-6c6e-406a-b2a8-f66430a05abe
 \.
 
 
@@ -298,6 +300,7 @@ f8fc65e9-6554-4498-9f8e-d6f16d810039	aa@gmao.com	AA@GMAO.COM	aa@gmao.com	AA@GMAO
 35646320-6836-47f8-8b08-3e399133ae78	avvv@example.com	AVVV@EXAMPLE.COM	avvv@example.com	AVVV@EXAMPLE.COM	f	argon2id$Sp6NZ/lQ0OEPGgGeffwU9g==$ia0UFlcCksDkvQ4g/8N3sD4IWN0iVEtYI1AlZzVTHb8=	64JBV7YD64SEBEDWKXMLZKIMRY6YYE4B	299199b3-fb84-4009-b623-d7178103c916	\N	f	f	\N	t	0
 a3bafd54-77e9-4e33-9387-ae5608dd82aa	aassss@example.com	AASSSS@EXAMPLE.COM	aassss@example.com	AASSSS@EXAMPLE.COM	f	argon2id$UEYHabhlGqGDFFlCYZCIHg==$rSwLv8msNIQ2IDAkxqCxLuUVhu4uVLCWxKzYSZta5yA=	TUJLSQ3M6K4BHWLFB4JVNRCK3TNI67UK	c6fb5e63-cef1-4a25-8d45-0dc3e0e14aee	\N	f	f	\N	t	0
 45680645-c5e1-4982-a1d6-c0513008ae07	admdddddin@example.com	ADMDDDDDIN@EXAMPLE.COM	admdddddin@example.com	ADMDDDDDIN@EXAMPLE.COM	f	argon2id$crxf2AoEAiVPceP1QNiefA==$xnNIufzKESbLkJPa+j6+ruseaN42CDMB3M6HoqlJxEI=	QV3WOXSUVWT7SVEX3LWJ6E67IX5PTLTX	2d822eb1-c727-4ca6-b98e-b7f776d187c2	\N	f	f	\N	t	0
+75b09704-d8c9-4bcf-bf6c-cd2aefa1d571	daniel@example.com	DANIEL@EXAMPLE.COM	daniel@example.com	DANIEL@EXAMPLE.COM	f	argon2id$TacfoDjHMV/MX2kFDUSCow==$VX1arDOCuLENakqAokFExmi4a5lsUmLweiFEYaEqHUw=	GP5KITUFWXMMVZZXQK5GCEEPYE5GB5E5	a8ce6870-9e7d-401e-bddc-16e578eb272a	\N	f	f	\N	t	0
 \.
 
 
@@ -305,8 +308,17 @@ a3bafd54-77e9-4e33-9387-ae5608dd82aa	aassss@example.com	AASSSS@EXAMPLE.COM	aasss
 -- Data for Name: Boards; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."Boards" ("Id", "PlayerId", "GameId", "Numbers") FROM stdin;
-9bb1656f-a912-444c-a0a5-95f5f15efc0d	f0c104d4-6b13-416a-b8ad-f80c4cf04443	52d7caf1-e125-4d03-b4be-7e445aa3621d	{1,2,2}
+COPY public."Boards" ("Id", "PlayerId", "GameId", "Numbers", "Price") FROM stdin;
+9bb1656f-a912-444c-a0a5-95f5f15efc0d	f0c104d4-6b13-416a-b8ad-f80c4cf04443	52d7caf1-e125-4d03-b4be-7e445aa3621d	{1,2,2}	22.00
+59e1bd76-d825-437c-8365-959e4cb43dc7	b8701bcd-36b4-4e93-a25a-f4a6fb63af01	52d7caf1-e125-4d03-b4be-7e445aa3621d	{1,2,3,6,7}	20.00
+c7d5cad1-9a3f-4a71-8b2a-6ef90dea41bb	b8701bcd-36b4-4e93-a25a-f4a6fb63af01	52d7caf1-e125-4d03-b4be-7e445aa3621d	{1,2,3,4,5,6,7}	80.00
+5fb4e0a3-895a-4052-a1de-dc19e7bf5998	b8701bcd-36b4-4e93-a25a-f4a6fb63af01	52d7caf1-e125-4d03-b4be-7e445aa3621d	{1,2,3,4,5}	20.00
+06ccf2ca-9999-42a8-9c3b-5c5dd493eb40	b8701bcd-36b4-4e93-a25a-f4a6fb63af01	52d7caf1-e125-4d03-b4be-7e445aa3621d	{1,2,3,4,5,6}	40.00
+ea75d47d-1d32-4637-b1b2-9a4f1859529b	b8701bcd-36b4-4e93-a25a-f4a6fb63af01	68623248-40e4-49ac-8a00-b8d306a904e8	{1,2,3,4,5,6}	40.00
+00d5b16f-0752-4682-8142-ba2433351bd9	b8701bcd-36b4-4e93-a25a-f4a6fb63af01	68623248-40e4-49ac-8a00-b8d306a904e8	{1,2,2,3,6,5}	40.00
+24df3f46-7aeb-4899-8bc6-8b76153d15c1	b8701bcd-36b4-4e93-a25a-f4a6fb63af01	563aa44f-ea9d-420d-b4aa-10c2271a7382	{1,2,3,4,5,6}	40.00
+5c5dcf01-27d4-4595-9050-794b193a5986	b8701bcd-36b4-4e93-a25a-f4a6fb63af01	f6718baf-7a50-4a9c-9abd-0fcc46a73db2	{3,4,5,6,7}	20.00
+65bbb315-bc8f-4ddd-8eba-ae72902aa9b6	b8701bcd-36b4-4e93-a25a-f4a6fb63af01	33296c22-fcc3-4aeb-b1f9-ab067a87d8de	{1,2,6,7,4}	40.00
 \.
 
 
@@ -315,12 +327,14 @@ COPY public."Boards" ("Id", "PlayerId", "GameId", "Numbers") FROM stdin;
 --
 
 COPY public."Games" ("Id", "StartDate", "EndDate", "WinningSequence") FROM stdin;
-33296c22-fcc3-4aeb-b1f9-ab067a87d8de	2024-11-17 22:00:39.277	2024-11-18 22:00:39.277	{1,2,2}
 f196c7d1-cee5-4784-af83-ef375018e504	2024-11-17 22:00:39.277	2024-11-18 22:00:39.277	{1,2,2}
 1c08b8b6-98e7-4b82-901b-0a7abda21cb8	2024-11-17 22:00:39.277	2024-11-18 22:00:39.277	{1,2,2}
 0d9ae2bd-9f4f-4742-a757-6e998d800f65	2024-11-17 22:00:39.277	2024-12-20 11:38:51.014	{1,2,4}
 68623248-40e4-49ac-8a00-b8d306a904e8	2024-11-17 22:00:39.277	2024-12-31 11:38:51.014	{1,2,2}
 52d7caf1-e125-4d03-b4be-7e445aa3621d	2024-12-01 17:14:00	2024-12-18 18:14:00	{1,3,2}
+563aa44f-ea9d-420d-b4aa-10c2271a7382	2024-12-05 00:19:29.346	2024-12-05 00:19:29.346	{1,2,3}
+f6718baf-7a50-4a9c-9abd-0fcc46a73db2	2024-12-05 11:12:22.005	2024-12-06 11:12:22.005	{3,4,5}
+33296c22-fcc3-4aeb-b1f9-ab067a87d8de	2024-11-17 22:00:39.277	2024-11-18 22:00:39.277	{1,2,6}
 \.
 
 
@@ -329,10 +343,11 @@ f196c7d1-cee5-4784-af83-ef375018e504	2024-11-17 22:00:39.277	2024-11-18 22:00:39
 --
 
 COPY public."Players" ("Id", "UserId", "Name", "Balance", "IsActive") FROM stdin;
-f0c104d4-6b13-416a-b8ad-f80c4cf04443	abbebc65-0820-4fde-b377-11fbf6536eb5	SRT	500.00	t
 1952d5b1-256c-42b1-be6f-7392fb1d84c4	a3bafd54-77e9-4e33-9387-ae5608dd82aa	Savchenko	190.00	t
-10909296-1cee-4dbc-8b9a-a0015173cc4e	35646320-6836-47f8-8b08-3e399133ae78	 Andriigg	445.00	t
-20a3d7ee-0a20-42cf-8cb8-9b619e89635d	45680645-c5e1-4982-a1d6-c0513008ae07	ава	666.00	t
+10909296-1cee-4dbc-8b9a-a0015173cc4e	35646320-6836-47f8-8b08-3e399133ae78	 Andrii	44.00	t
+f0c104d4-6b13-416a-b8ad-f80c4cf04443	abbebc65-0820-4fde-b377-11fbf6536eb5	Bob	2014.00	t
+20a3d7ee-0a20-42cf-8cb8-9b619e89635d	45680645-c5e1-4982-a1d6-c0513008ae07	ава	888.00	t
+b8701bcd-36b4-4e93-a25a-f4a6fb63af01	75b09704-d8c9-4bcf-bf6c-cd2aefa1d571	Daniel	116.00	t
 \.
 
 
@@ -341,9 +356,19 @@ f0c104d4-6b13-416a-b8ad-f80c4cf04443	abbebc65-0820-4fde-b377-11fbf6536eb5	SRT	50
 --
 
 COPY public."Transactions" ("Id", "PlayerId", "Amount", "TransactionDate", "MobilePayTransactionId") FROM stdin;
-96aa1967-4099-4ec8-9de6-559617d5ec2b	10909296-1cee-4dbc-8b9a-a0015173cc4e	220.00	2024-12-03 14:30:31.941569	stridd23ng
-c0d6ba5c-4671-4845-9988-d5967d934c63	10909296-1cee-4dbc-8b9a-a0015173cc4e	220.00	2024-12-03 14:30:49.641328	striddng
-432aef95-f259-4d0c-b93c-4fd12f3cd93d	f0c104d4-6b13-416a-b8ad-f80c4cf04443	220.00	2024-12-03 14:32:47.870174	striddng
+432aef95-f259-4d0c-b93c-4fd12f3cd93d	f0c104d4-6b13-416a-b8ad-f80c4cf04443	4470.00	2024-12-03 19:50:52.112215	stffring
+6d82b1e6-28e9-41c3-b32a-3b2b21c1e4a5	20a3d7ee-0a20-42cf-8cb8-9b619e89635d	100.00	2024-12-03 20:55:02.179953	string
+3845ae7b-4756-4514-aade-66ef5f8c4625	10909296-1cee-4dbc-8b9a-a0015173cc4e	11.00	2024-12-03 22:56:37.812508	sffftridng
+ce363db5-37c0-481e-aa69-e87f9dc895bb	20a3d7ee-0a20-42cf-8cb8-9b619e89635d	220.00	2024-12-04 11:33:54.806678	string
+5c1c8620-5403-4165-9713-b086129beace	f0c104d4-6b13-416a-b8ad-f80c4cf04443	33.00	2024-12-04 20:03:56.224902	ddddd
+86b74f6f-d31e-49e1-ac52-f42679184cb7	f0c104d4-6b13-416a-b8ad-f80c4cf04443	3.00	2024-12-04 20:25:52.493268	fghhgh
+dcedd558-ff98-4c29-a772-fa7d10b8d170	f0c104d4-6b13-416a-b8ad-f80c4cf04443	233.00	2024-12-04 21:06:07.650447	fghhgh
+46c30d31-39e3-49c3-9967-c74f6e5638ee	f0c104d4-6b13-416a-b8ad-f80c4cf04443	444.00	2024-12-04 21:25:05.901227	4ddc
+36ac0a91-cc53-47ff-b14e-665ca30f3f8e	f0c104d4-6b13-416a-b8ad-f80c4cf04443	333.00	2024-12-04 21:25:45.452207	ddddd
+73e844b7-50e5-4a32-81d7-67f8841bf281	10909296-1cee-4dbc-8b9a-a0015173cc4e	44.00	2024-12-04 21:26:26.803031	tg
+0332e3bb-813d-4b83-96a4-c7e40e1250f0	f0c104d4-6b13-416a-b8ad-f80c4cf04443	32.00	2024-12-04 21:34:59.010347	SomeTransactionId
+1600eb04-38fa-45f4-891d-9df6f35e6d56	f0c104d4-6b13-416a-b8ad-f80c4cf04443	44.00	2024-12-04 21:35:10.155882	SomeTransactionId
+9214b2c7-8029-4ae8-91e0-71c5caf0a63b	b8701bcd-36b4-4e93-a25a-f4a6fb63af01	300.00	2024-12-04 21:40:07.819665	ddddd
 \.
 
 
@@ -352,6 +377,13 @@ c0d6ba5c-4671-4845-9988-d5967d934c63	10909296-1cee-4dbc-8b9a-a0015173cc4e	220.00
 --
 
 COPY public."Winners" ("Id", "PlayerId", "GameId", "WinningAmount") FROM stdin;
+ba077a23-899d-4378-9920-692c447dfa8f	b8701bcd-36b4-4e93-a25a-f4a6fb63af01	52d7caf1-e125-4d03-b4be-7e445aa3621d	29.40
+2201c157-d74a-4f71-9290-24d09395ae96	b8701bcd-36b4-4e93-a25a-f4a6fb63af01	52d7caf1-e125-4d03-b4be-7e445aa3621d	33.13
+899f40fe-994f-46a7-a69b-29891fe84bc2	b8701bcd-36b4-4e93-a25a-f4a6fb63af01	52d7caf1-e125-4d03-b4be-7e445aa3621d	33.13
+ef621747-bc4a-4b29-8ad8-92db64de79a3	b8701bcd-36b4-4e93-a25a-f4a6fb63af01	52d7caf1-e125-4d03-b4be-7e445aa3621d	33.13
+eec99d07-fd00-4057-939c-56c74dfa49ad	b8701bcd-36b4-4e93-a25a-f4a6fb63af01	563aa44f-ea9d-420d-b4aa-10c2271a7382	28.00
+90d8ceeb-16a7-4d34-afc9-aeb352694ada	b8701bcd-36b4-4e93-a25a-f4a6fb63af01	33296c22-fcc3-4aeb-b1f9-ab067a87d8de	28.00
+d8abea5f-e792-4c65-a518-378739b7fe23	b8701bcd-36b4-4e93-a25a-f4a6fb63af01	33296c22-fcc3-4aeb-b1f9-ab067a87d8de	28.00
 \.
 
 

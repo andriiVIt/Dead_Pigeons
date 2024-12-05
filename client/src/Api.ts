@@ -13,6 +13,7 @@ export interface AuthUserInfo {
   username?: string | null;
   isAdmin?: boolean;
   canPublish?: boolean;
+    playerId?: string;
 }
 
 export interface CheckWinnerResponseDto {
@@ -53,6 +54,8 @@ export interface GetBoardDto {
   /** @format uuid */
   gameId?: string;
   numbers?: number[] | null;
+  /** @format double */
+  price?: number;
 }
 
 export interface GetGameDto {
@@ -80,12 +83,12 @@ export interface GetTransactionDto {
   id?: string;
   /** @format uuid */
   playerId?: string;
+  playerName?: string | null;
   /** @format double */
   amount?: number;
   mobilePayTransactionId?: string | null;
-  playerName?: string | null;
-    /** @format date-time */
-    transactionDate?: string; // Додайте це
+  /** @format date-time */
+  transactionDate?: string;
 }
 
 export interface GetWinnerDto {
@@ -95,11 +98,13 @@ export interface GetWinnerDto {
   gameId?: string;
   /** @format uuid */
   playerId?: string;
-  /** @format double */
-  prizeAmount?: number;
   playerName?: string | null;
+  /** @format double */
+  winningAmount?: number;
   /** @format date-time */
   gameStartDate?: string;
+  /** @format date-time */
+  gameEndDate?: string;
 }
 
 export interface LoginRequest {
@@ -796,6 +801,38 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
+     * @tags Transaction
+     * @name TransactionPlayerDetail
+     * @request GET:/api/Transaction/player/{playerId}
+     * @secure
+     */
+    transactionPlayerDetail: (
+      playerId: string,
+      query?: {
+        /**
+         * @format int32
+         * @default 10
+         */
+        limit?: number;
+        /**
+         * @format int32
+         * @default 0
+         */
+        startAt?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<void, any>({
+        path: `/api/Transaction/player/${playerId}`,
+        method: "GET",
+        query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
      * @tags Winner
      * @name WinnerGameDetail
      * @request GET:/api/Winner/game/{gameId}
@@ -818,45 +855,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/api/Winner/game/{gameId}/check
      * @secure
      */
-    winnerGameCheckCreate: (gameId: string, params: RequestParams = {}) =>
-      this.request<GetWinnerDto, any>({
+    winnerGameCheckCreate: (gameId: string, data: string, params: RequestParams = {}) =>
+      this.request<CheckWinnerResponseDto, any>({
         path: `/api/Winner/game/${gameId}/check`,
         method: "POST",
+        body: data,
         secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Winner
-     * @name WinnerGameCheckDetail
-     * @request GET:/api/Winner/game/{gameId}/check
-     * @secure
-     */
-    winnerGameCheckDetail: (gameId: string, params: RequestParams = {}) =>
-      this.request<GetWinnerDto, any>({
-        path: `/api/Winner/game/${gameId}/check`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Winner
-     * @name WinnerCreate
-     * @request POST:/api/Winner/{winnerId}
-     * @secure
-     */
-    winnerCreate: (winnerId: string, params: RequestParams = {}) =>
-      this.request<GetWinnerDto, any>({
-        path: `/api/Winner/${winnerId}`,
-        method: "POST",
-        secure: true,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),

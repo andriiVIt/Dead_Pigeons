@@ -98,7 +98,7 @@ public class GameService(
                 Id = Guid.NewGuid(),
                 GameId = gameId,
                 PlayerId = playerId,
-                PrizeAmount = prizeAmount
+                WinningAmount = prizeAmount
             };
 
             context.Winners.Add(winner);

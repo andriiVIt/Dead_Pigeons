@@ -20,6 +20,8 @@ import GamePage from "/src/pages/Admin/GamePage.tsx";
 import TransactionPage from "/src/pages/Admin/TransactionPage.tsx";
 import GamesPage from "/src/pages/Player/GamesPage.tsx";
 import BoardsPage from "/src/pages/Player/BoardsPage.tsx";
+
+import TransactionsTable from "/src/pages/Player/TransactionsTable.tsx";
 const router = createBrowserRouter(
     createRoutesFromElements(
         <> <Route path={'/'} element={<Root />} errorElement={<ErrorPage />} id={'root'}>
@@ -37,6 +39,7 @@ const router = createBrowserRouter(
                 <Route path="/player" element={<PlayerDashboard />} errorElement={<ErrorPage />} />
                 <Route path="/games" element={<GamesPage />} errorElement={<ErrorPage />} />
                 <Route path="/boards" element={<BoardsPage />} errorElement={<ErrorPage />} />
+                <Route path="/transactions" element={<TransactionsTable />} errorElement={<ErrorPage />} />
 
             </Route>
         </Route>

@@ -1,9 +1,9 @@
 using DataAccess;
- 
+using DataAccess.models;
 using Microsoft.EntityFrameworkCore;
- 
+using Service.DTO.Game;
 using Service.Interfaces;
-using Service.DTO.Winner;
+
  
 namespace Service.Services;
 
@@ -27,48 +27,56 @@ public class WinnerService : IWinnerService
         return winners.Select(GetWinnerDto.FromEntity).ToList();
     }
 
-    // public CheckWinnerResponseDto CheckForWinner(Guid gameId, Guid playerId)
-    // {
-    //     var game = _context.Games
-    //         .Include(g => g.WinningSequence)
-    //         .Include(g => g.Boards)
-    //         .FirstOrDefault(g => g.Id == gameId);
-    //
-    //     if (game == null)
-    //         throw new KeyNotFoundException("Game not found.");
-    //
-    //     var playerBoard = _context.Boards
-    //         .FirstOrDefault(b => b.GameId == gameId && b.PlayerId == playerId);
-    //
-    //     if (playerBoard == null)
-    //         throw new KeyNotFoundException("Player's board not found.");
-    //
-    //     if (!playerBoard.Numbers.SequenceEqual(game.WinningSequence))
-    //         return new CheckWinnerResponseDto
-    //         {
-    //             IsWinner = false,
-    //             PrizeAmount = 0
-    //         };
-    //
-    //     var prizeAmount = CalculatePrizeAmount(gameId);
-    //
-    //     var winner = new DataAccess.models.Winner
-    //     {
-    //         Id = Guid.NewGuid(),
-    //         GameId = gameId,
-    //         PlayerId = playerId,
-    //         PrizeAmount = prizeAmount
-    //     };
-    //
-    //     _context.Winners.Add(winner);
-    //     _context.SaveChanges();
-    //
-    //     return new CheckWinnerResponseDto
-    //     {
-    //         IsWinner = true,
-    //         PrizeAmount = prizeAmount
-    //     };
-    // }
+    public CheckWinnerResponseDto CheckForWinner(Guid gameId, Guid playerId)
+    {
+        var game = _context.Games
+            .Include(g => g.Boards)
+            .FirstOrDefault(g => g.Id == gameId);
+
+        if (game == null)
+            throw new KeyNotFoundException("Game not found.");
+
+        Console.WriteLine($"Winning Sequence: {string.Join(", ", game.WinningSequence)}");
+
+        foreach (var board in game.Boards)
+        {
+            Console.WriteLine($"Board Numbers for Player {board.PlayerId}: {string.Join(", ", board.Numbers)}");
+        }
+
+        var player = _context.Players.Find(playerId);
+        if (player == null)
+            throw new KeyNotFoundException("Player not found.");
+        var winningBoards = game.Boards
+            .Where(b => game.WinningSequence.All(n => b.Numbers.Contains(n)))
+            .ToList();
+
+        Console.WriteLine($"Number of Winning Boards: {winningBoards.Count}");
+
+        if (!winningBoards.Any())
+            return new CheckWinnerResponseDto { IsWinner = false, PrizeAmount = 0 };
+
+        decimal totalPrize = CalculatePrizeAmount(gameId);
+        decimal individualPrize = totalPrize / winningBoards.Count;
+
+        foreach (var board in winningBoards)
+        {
+            AddPrizeToPlayerBalance(board.PlayerId, individualPrize);
+
+            var winner = new Winner
+            {
+                Id = Guid.NewGuid(),
+                GameId = gameId,
+                PlayerId = board.PlayerId,
+                WinningAmount = individualPrize
+            };
+
+            _context.Winners.Add(winner);
+        }
+
+        _context.SaveChanges();
+
+        return new CheckWinnerResponseDto { IsWinner = true, PrizeAmount = individualPrize };
+    }
 
     public GetWinnerDto? GetWinnerById(Guid winnerId)
     {
@@ -80,15 +88,22 @@ public class WinnerService : IWinnerService
         return winner == null ? null : GetWinnerDto.FromEntity(winner);
     }
 
-    // private decimal CalculatePrizeAmount(Guid gameId)
-    // {
-    //     var totalBets = context.Transactions
-    //         .Where(t => context.Boards
-    //             .Where(b => b.GameId == gameId)
-    //             .Select(b => b.PlayerId)
-    //             .Contains(t.PlayerId))
-    //         .Sum(t => t.Amount);
-    //
-    //     return totalBets * 0.8m; // 80% від ставок як приз
-    // }
+    private decimal CalculatePrizeAmount(Guid gameId)
+    {
+        var totalRevenue = _context.Boards
+            .Where(b => b.GameId == gameId)
+            .Sum(b => b.Price);
+
+        decimal prizePool = totalRevenue * 0.7m; // 70% йде на призовий фонд
+        return prizePool;
+    }
+    private void AddPrizeToPlayerBalance(Guid playerId, decimal prize)
+    {
+        var player = _context.Players.FirstOrDefault(p => p.Id == playerId);
+        if (player != null)
+        {
+            player.Balance += prize;
+            _context.Entry(player).State = EntityState.Modified;
+        }
+    }
 }

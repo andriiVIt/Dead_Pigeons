@@ -39,6 +39,11 @@ namespace DataAccess
                 .HasForeignKey(b => b.GameId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
+            
+            modelBuilder.Entity<Board>()
+                .Property(b => b.Price)
+                .HasColumnType("decimal(10, 2)") // Тип для точного зберігання грошових сум
+                .IsRequired(); // Ціна є обов'язковою
 
             // Game -> Winner (One-to-Many)
             modelBuilder.Entity<Winner>()
@@ -48,12 +53,11 @@ namespace DataAccess
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
-            // Player -> Winner (One-to-Many)
             modelBuilder.Entity<Winner>()
-                .HasOne(w => w.Player)
-                .WithMany()
-                .HasForeignKey(w => w.PlayerId)
-                .OnDelete(DeleteBehavior.Restrict)
+                .HasOne(w => w.Game)
+                .WithMany(g => g.Winners)
+                .HasForeignKey(w => w.GameId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
             // Player -> Transaction (One-to-Many)

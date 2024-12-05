@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Service;
 using Service.DTO.Game;
 using Service.Interfaces;
-using Service.DTO.Winner;
+
 
 namespace Api.Controllers;
 
@@ -25,16 +25,13 @@ public class WinnerController : ControllerBase
         var winners = _winnerService.GetWinnersByGame(gameId);
         return Ok(winners);
     }
-
-    // Перевірка, чи є гравець переможцем, та створення запису про переможця
     [HttpPost]
     [Route("game/{gameId:guid}/check")]
-    // public ActionResult<CheckWinnerResponseDto> CheckForWinner(Guid gameId, [FromBody] Guid playerId)
-    // {
-    //     var result = _winnerService.CheckForWinner(gameId, playerId);
-    //     return Ok(result);
-    // }
-
+    public ActionResult<CheckWinnerResponseDto> CheckForWinner(Guid gameId, [FromBody] Guid playerId)
+    {
+        var result = _winnerService.CheckForWinner(gameId, playerId);
+        return Ok(result);
+    }
     // Отримання детальної інформації про конкретного переможця
     [HttpGet]
     [Route("{winnerId:guid}")]

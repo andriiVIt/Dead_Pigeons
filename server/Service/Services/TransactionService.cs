@@ -165,5 +165,17 @@ public class TransactionService : ITransactionService
             throw new Exception($"Failed to delete transaction and update balance: {ex.Message}");
         }
     }
+    public List<GetTransactionDto> GetTransactionsByPlayer(Guid playerId, int limit, int startAt)
+    {
+        var transactions = _context.Transactions
+            .Include(t => t.Player)
+            .Where(t => t.PlayerId == playerId) // Фільтрація за PlayerId
+            .OrderBy(t => t.TransactionDate)
+            .Skip(startAt)
+            .Take(limit)
+            .ToList();
+
+        return transactions.Select(GetTransactionDto.FromEntity).ToList();
+    }
 
 }

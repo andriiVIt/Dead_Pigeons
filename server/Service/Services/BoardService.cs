@@ -17,7 +17,37 @@ public class BoardService : IBoardService
 
     public GetBoardDto CreateBoard(CreateBoardDto createBoardDto)
     {
-        var board = CreateBoardDto.ToEntity(createBoardDto);
+        // Перевірка: чи існує гравець
+        var player = _context.Players.Find(createBoardDto.PlayerId);
+        if (player == null)
+            throw new KeyNotFoundException("Player not found.");
+
+        // Перевірка: чи вистачає коштів
+        int numberCount = createBoardDto.Numbers.Count;
+        decimal price = numberCount switch
+        {
+            5 => 20m,
+            6 => 40m,
+            7 => 80m,
+            8 => 160m,
+            _ => throw new ArgumentException("Invalid number count.")
+        };
+
+        if (player.Balance < price)
+            throw new InvalidOperationException("Insufficient balance.");
+
+        // Зменшення балансу гравця
+        player.Balance -= price;
+        _context.Players.Update(player);
+        // Створення дошки
+        var board = new Board
+        {
+            Id = Guid.NewGuid(),
+            PlayerId = createBoardDto.PlayerId,
+            GameId = createBoardDto.GameId,
+            Numbers = createBoardDto.Numbers,
+            Price = price
+        };
 
         _context.Boards.Add(board);
         _context.SaveChanges();

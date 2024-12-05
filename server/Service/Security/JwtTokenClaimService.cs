@@ -1,10 +1,12 @@
 using System.Security.Claims;
+using DataAccess;
 using DataAccess.models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-
+using Service.DTO.Player;
 namespace Service.Security;
 
 public class JwtTokenClaimService : ITokenClaimsService
@@ -13,19 +15,33 @@ public class JwtTokenClaimService : ITokenClaimsService
 
     private readonly AppOptions _options;
     private readonly UserManager<User> _userManager;
+    private readonly AppDbContext _context;
 
-    public JwtTokenClaimService(IOptions<AppOptions> options, UserManager<User> userManager)
+
+public JwtTokenClaimService(IOptions<AppOptions> options, UserManager<User> userManager, AppDbContext context)
     {
         _options = options.Value;
         _userManager = userManager;
+        _context = context;
     }
 
     public async Task<string> GetTokenAsync(string userName)
     {
+        // Знаходимо користувача за ім'ям
         var user = await _userManager.FindByNameAsync(userName)
                    ?? throw new Exception("Could not find user");
-        var roles = await _userManager.GetRolesAsync(user);
 
+        // Отримуємо ролі користувача
+        var roles = await _userManager.GetRolesAsync(user);
+        var claims = new ClaimsIdentity(user.ToClaims(roles));
+        var player =  _context.Players.FirstOrDefault(p => p.UserId == user.Id);
+        if (player != null)
+        {
+            claims.AddClaim(new Claim("playerId", player.Id.ToString())); // Додаємо playerId
+        }
+        claims.AddClaim(new Claim("currentDate", DateTime.UtcNow.ToString("yyyy-MM-dd"))); // Додаємо дату
+
+        // Генеруємо токен
         var key = Convert.FromBase64String(_options.JwtSecret);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
@@ -33,7 +49,7 @@ public class JwtTokenClaimService : ITokenClaimsService
                 new SymmetricSecurityKey(key),
                 SignatureAlgorithm
             ),
-            Subject = new ClaimsIdentity(user.ToClaims(roles)),
+            Subject = claims,
             Expires = DateTime.UtcNow.AddDays(7),
             Issuer = _options.Address,
             Audience = _options.Address

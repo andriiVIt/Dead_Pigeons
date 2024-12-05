@@ -47,9 +47,10 @@ public class Program
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
                 .EnableSensitiveDataLogging()
         );
+        
         builder.Services.AddScoped<DbSeeder>();
         builder.Services.AddScoped<IRepository<User>, UserRepository>();
-        
+        // builder.Services.AddScoped<ITokenClaimsService, JwtTokenClaimService>();
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowFrontend", policy =>

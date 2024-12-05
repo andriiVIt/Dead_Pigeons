@@ -1,15 +1,16 @@
-namespace Service.DTO.Winner;
-
 using DataAccess.models;
 
 public class GetWinnerDto
 {
     public Guid Id { get; set; }
     public Guid GameId { get; set; }
+    
     public Guid PlayerId { get; set; }
-    public decimal PrizeAmount { get; set; }
     public string PlayerName { get; set; } = string.Empty;
+    public decimal WinningAmount { get; set; }
+    
     public DateTime GameStartDate { get; set; }
+    public DateTime GameEndDate { get; set; }
 
     public static GetWinnerDto FromEntity(Winner winner)
     {
@@ -17,10 +18,12 @@ public class GetWinnerDto
         {
             Id = winner.Id,
             GameId = winner.GameId,
+            
             PlayerId = winner.PlayerId,
-            PrizeAmount = winner.PrizeAmount,
             PlayerName = winner.Player.Name,
-            GameStartDate = winner.Game.StartDate
+            WinningAmount = winner.WinningAmount,
+            GameStartDate = winner.Game.StartDate,
+            GameEndDate = winner.Game.EndDate ?? DateTime.MinValue 
         };
     }
 }

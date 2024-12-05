@@ -59,4 +59,11 @@ public class TransactionController : ControllerBase
 
         return NoContent();
     }
+    [HttpGet("player/{playerId}")]
+    public IActionResult GetPlayerTransactions(Guid playerId, int limit = 10, int startAt = 0)
+    {
+        var transactions = _service.GetTransactionsByPlayer(playerId, limit, startAt);
+        return Ok(transactions);
+    }
+
 }
