@@ -3,7 +3,7 @@ import { useAtom } from "jotai";
 import { transactionsAtom, transactionsLoadingAtom, fetchTransactions } from "/src/atoms/transactionAtoms";
 import { jwtAtom } from "/src/atoms/auth";
 import NavBarPlayer from "/src/components/playerComponents/NavBarPlayer.tsx"; // Імпорт токена
-import CreateTransactionForm from "/src/components/playerComponents/CreateTransactionModal";
+
 import CreateTransactionModal from "/src/components/playerComponents/CreateTransactionModal";
 
 

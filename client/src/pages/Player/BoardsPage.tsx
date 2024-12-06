@@ -1,50 +1,65 @@
-import React, {useEffect, useState} from 'react';
-import {GetBoardDto} from "/src/Api.ts";
-import {http} from "/src/http";
+import React, { useEffect } from "react";
+import { useAtom } from "jotai";
+import { boardsAtom, boardsLoadingAtom, fetchBoards } from "/src/atoms/boardAtoms";
+import { jwtAtom } from "/src/atoms/auth";
 import NavBarPlayer from "/src/components/playerComponents/NavBarPlayer.tsx";
 
-const BoardsPage = () => {
-    const [boards, setBoards] = useState<GetBoardDto[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
+const BoardsTable: React.FC = () => {
+    const [boards, setBoards] = useAtom(boardsAtom);
+    const [isLoading, setLoading] = useAtom(boardsLoadingAtom);
+    const [token] = useAtom(jwtAtom);
 
     useEffect(() => {
-        const fetchBoards = async () => {
-            setIsLoading(true)
-            setError(null)
-            try {
-                const response = await http.boardList()
-                setBoards(response.data)
-            } catch (err) {
-                console.error(err)
-                setError('Failed to fetch boards')
-            } finally {
-                setIsLoading(false)
-            }
+        if (!token) {
+            console.error("Token not found. User might not be logged in.");
+            return;
         }
-        fetchBoards()
-    }, []);
+
+        const loadBoards = async () => {
+            setLoading(true);
+            await fetchBoards(setBoards, token);
+            setLoading(false);
+        };
+
+        loadBoards();
+    }, [setBoards, setLoading, token]);
 
     return (
-        <div>
-            <NavBarPlayer/>
-
-            <div className="container mx-auto py-6">
-
-                <h1>Lorem ipsum dolor.</h1>
-                {isLoading && <p>Loading...</p>}
-                {error && <p>{error}</p>}
-                {boards.map((board) => (
-                    <div key={board.id}>
-                        <h2>Board id: {board.id}</h2>
-                        <p>Game ID: {board.gameId}</p>
-                        <p>Number of players: {board.numbers?.join(", ") || "None"}</p>
-                    </div>
-                ))}
-                {!isLoading && !error && boards.length === 0 && <p>No boards found</p>}
+        <div className="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-800 to-pink-600 relative text-white">
+            <NavBarPlayer />
+            <div className="container mx-auto p-4">
+                <h1 className="text-3xl font-bold text-center mb-6">My Boards</h1>
+                {isLoading ? (
+                    <p className="text-center">Loading boards...</p>
+                ) : boards.length > 0 ? (
+                    <table className="table-auto w-full bg-white text-black rounded-lg shadow">
+                        <thead>
+                        <tr>
+                            <th className="px-4 py-2 border">Board ID</th>
+                            <th className="px-4 py-2 border">Game ID</th>
+                            <th className="px-4 py-2 border">Numbers</th>
+                            <th className="px-4 py-2 border">Price</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {boards.map((board) => (
+                            <tr key={board.id}>
+                                <td className="px-4 py-2 border">{board.id || "N/A"}</td>
+                                <td className="px-4 py-2 border">{board.gameId || "N/A"}</td>
+                                <td className="px-4 py-2 border">
+                                    {board.numbers?.length ? board.numbers.join(", ") : "N/A"}
+                                </td>
+                                <td className="px-4 py-2 border">{board.price || "N/A"} DKK</td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                ) : (
+                    <p className="text-center">No boards found</p>
+                )}
             </div>
         </div>
     );
 };
 
-export default BoardsPage;
+export default BoardsTable;
