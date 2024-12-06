@@ -22,6 +22,8 @@ import GamesPage from "/src/pages/Player/GamesPage.tsx";
 import BoardsPage from "/src/pages/Player/BoardsPage.tsx";
 
 import TransactionsTable from "/src/pages/Player/TransactionsTable.tsx";
+
+import BoardsAdmin from "/src/pages/Admin/BoardsAdmin.tsx";
 const router = createBrowserRouter(
     createRoutesFromElements(
         <> <Route path={'/'} element={<Root />} errorElement={<ErrorPage />} id={'root'}>
@@ -29,10 +31,11 @@ const router = createBrowserRouter(
             <Route path="/login" element={<Login />} errorElement={<ErrorPage />} />
             <Route element={<ProtectedRoute role="Admin" />}>
                 <Route path="/admin" element={<AdminDashboard />} errorElement={<ErrorPage />} />
-                <Route path="/admin/players" element={<PlayersPage />} />
-                <Route path="/admin/games" element={<GamePage />} />
-                <Route path="/admin/transactions" element={<TransactionPage />} />
-                <Route path="/register-player" element={<Register />} />
+                <Route path="/admin/players" element={<PlayersPage />} errorElement={<ErrorPage />} />
+                <Route path="/admin/games" element={<GamePage />}  errorElement={<ErrorPage />} />
+                <Route path="/admin/transactions" element={<TransactionPage />}  errorElement={<ErrorPage />} />
+                <Route path="/register-player" element={<Register />} errorElement={<ErrorPage />} />
+                <Route path="/admin/boards" element={<BoardsAdmin />} errorElement={<ErrorPage />} />
 
             </Route>
             <Route element={<ProtectedRoute role="Player" />}>
