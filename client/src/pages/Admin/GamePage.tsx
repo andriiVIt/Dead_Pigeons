@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import NavBarAdmin from "/src/components/adminComponents/NavBarAdmin.tsx";
 import { useAtom } from "jotai";
 import {
@@ -17,7 +17,8 @@ const GamePage: React.FC = () => {
     const [error, setError] = useAtom(gamesErrorAtom);
     const [selectedGame, setSelectedGame] = useAtom(selectedGameAtom);
     const [isModalOpen, setIsModalOpen] = React.useState(false);
-
+    const [sortColumn, setSortColumn] = useState<string | null>(null);
+    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
     useEffect(() => {
         const fetchGames = async () => {
             setIsLoading(true);
@@ -56,7 +57,7 @@ const GamePage: React.FC = () => {
 
     const handleEdit = (game: GetGameDto) => {
         setSelectedGame({
-            id: game.id, // Додайте ID гри
+            id: game.id,
             startDate: game.startDate,
             endDate: game.endDate,
             winningSequence: game.winningSequence,
@@ -67,7 +68,6 @@ const GamePage: React.FC = () => {
     const handleSave = async (data: CreateGameDto | UpdateGameDto) => {
         try {
             if (selectedGame) {
-
                 const response = await http.gameUpdate(selectedGame.id!, {
                     ...data,
                     startDate: new Date(data.startDate!).toISOString(),
@@ -79,7 +79,6 @@ const GamePage: React.FC = () => {
                     )
                 );
             } else {
-                // Створення нової гри
                 const response = await http.gameCreate({
                     ...data,
                     startDate: new Date(data.startDate!).toISOString(),
@@ -93,6 +92,38 @@ const GamePage: React.FC = () => {
             alert("Failed to save game.");
             console.error(err);
         }
+    };
+
+    const getWeekNumber = (dateString: string | undefined) => {
+        if (!dateString) return "N/A";
+        const date = new Date(dateString);
+        const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+        const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+        return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+    };
+    const handleSort = (column: string) => {
+        const direction = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
+        setSortColumn(column);
+        setSortDirection(direction);
+
+        const sortedGames = [...games].sort((a, b) => {
+            const aValue = column === "week" ? getWeekNumber(a.startDate) : a[column as keyof GetGameDto];
+            const bValue = column === "week" ? getWeekNumber(b.startDate) : b[column as keyof GetGameDto];
+
+            if (aValue === bValue) return 0;
+            if (aValue == null) return direction === "asc" ? -1 : 1;
+            if (bValue == null) return direction === "asc" ? 1 : -1;
+
+            return direction === "asc"
+                ? aValue > bValue
+                    ? 1
+                    : -1
+                : aValue > bValue
+                    ? -1
+                    : 1;
+        });
+
+        setGames(sortedGames);
     };
 
     return (
@@ -112,7 +143,13 @@ const GamePage: React.FC = () => {
                 <table className="table-auto w-full bg-white text-black rounded shadow">
                     <thead>
                     <tr>
-                        <th className="px-4 py-2 border">ID</th>
+                        <th
+                            className="px-4 py-2 border cursor-pointer"
+                            onClick={() => handleSort("week")}
+                        >
+                            Game Week {sortColumn === "week" && (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th className="px-4 py-2 border">Game Week</th>
                         <th className="px-4 py-2 border">Start Date</th>
                         <th className="px-4 py-2 border">End Date</th>
                         <th className="px-4 py-2 border">Winning Sequence</th>
@@ -122,10 +159,14 @@ const GamePage: React.FC = () => {
                     <tbody>
                     {games.map((game) => (
                         <tr key={game.id}>
-                            <td className="px-4 py-2 border">{game.id}</td>
-                            <td className="px-4 py-2 border">{game.startDate}</td>
-                            <td className="px-4 py-2 border">{game.endDate}</td>
-                            <td className="px-4 py-2 border">{game.winningSequence?.join(", ")}</td>
+                            <td className="px-4 py-2 border">
+                                {getWeekNumber(game.startDate)}
+                            </td>
+                            <td className="px-4 py-2 border">{game.startDate || "N/A"}</td>
+                            <td className="px-4 py-2 border">{game.endDate || "N/A"}</td>
+                            <td className="px-4 py-2 border">
+                                {game.winningSequence?.join(", ") || "N/A"}
+                            </td>
                             <td className="px-4 py-2 border">
                                 <button
                                     className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
@@ -145,7 +186,6 @@ const GamePage: React.FC = () => {
                     </tbody>
                 </table>
             </div>
-            {/* Інтеграція модального вікна */}
             <EditGameModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}

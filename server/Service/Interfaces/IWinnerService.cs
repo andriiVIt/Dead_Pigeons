@@ -27,5 +27,6 @@ public interface IWinnerService
     /// <returns>DTO переможця або null, якщо не знайдено.</returns>
     GetWinnerDto? GetWinnerById(Guid winnerId);
 
-     
+    List<GetWinnerDto> GetWinnersByPlayer(Guid playerId);
+
 }

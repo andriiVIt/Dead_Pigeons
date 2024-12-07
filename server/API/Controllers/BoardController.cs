@@ -41,7 +41,7 @@ public class BoardController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<GetBoardDto>> GetAllBoards(int limit = 10, int startAt = 0)
+    public ActionResult<List<GetBoardDto>> GetAllBoards(int limit = 30, int startAt = 0)
     {
         var boards = _service.GetAllBoards(limit, startAt);
         return Ok(boards);

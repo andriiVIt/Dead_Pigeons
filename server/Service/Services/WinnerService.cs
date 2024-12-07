@@ -102,8 +102,36 @@ public class WinnerService : IWinnerService
         var player = _context.Players.FirstOrDefault(p => p.Id == playerId);
         if (player != null)
         {
+            if (string.IsNullOrWhiteSpace(player.UserId))
+            {
+                throw new InvalidOperationException($"Player {playerId} does not have a valid UserId.");
+            }
+
             player.Balance += prize;
             _context.Entry(player).State = EntityState.Modified;
         }
+        else
+        {
+            throw new KeyNotFoundException($"Player with ID {playerId} not found.");
+        }
+    }
+    public List<GetWinnerDto> GetWinnersByPlayer(Guid playerId)
+    {
+        var winners = _context.Winners
+            .AsNoTracking()
+            .Where(w => w.PlayerId == playerId)
+            .Select(w => new GetWinnerDto
+            {
+                Id = w.Id,
+                GameId = w.GameId,
+                PlayerId = w.PlayerId,
+                PlayerName = w.Player.Name,
+                WinningAmount = w.WinningAmount,
+                GameStartDate = w.Game.StartDate,
+                 
+            })
+            .ToList();
+
+        return winners;
     }
 }

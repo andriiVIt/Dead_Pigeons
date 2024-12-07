@@ -1,7 +1,134 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import NavBarAdmin from "/src/components/adminComponents/NavBarAdmin.tsx";
+import { useNavigate } from "react-router-dom";
+import { useAtom } from "jotai";
+import { http } from "/src/http";
+import { jwtAtom } from "/src/atoms/auth.ts";
+import EditGameModal from "/src/components/adminComponents/EditGameModal";
+import { CreateGameDto, GetWinnerDto, GetPlayerDto, GetTransactionDto } from "/src/Api";
+
+type WinnerWithGameWeek = GetWinnerDto & { gameWeek: number };
 
 const AdminDashboard: React.FC = () => {
+    const navigate = useNavigate();
+    const [playersCount, setPlayersCount] = useState<number>(0);
+    const [boardsCount, setBoardsCount] = useState<number>(0);
+    const [transactionsCount, setTransactionsCount] = useState<number>(0);
+    const [totalBalance, setTotalBalance] = useState<number>(0);
+    const [token] = useAtom(jwtAtom);
+    const [recentWinners, setRecentWinners] = useState<WinnerWithGameWeek[]>([]);
+    const [recentPlayers, setRecentPlayers] = useState<GetPlayerDto[]>([]);
+    const [recentTransactions, setRecentTransactions] = useState<GetTransactionDto[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+    const getWeekNumber = (date: Date): number => {
+        const startDate = new Date(date.getFullYear(), 0, 1);
+        const days = Math.floor((date.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000));
+        return Math.ceil((days + startDate.getDay() + 1) / 7);
+    };
+
+    const handleCreateGame = async (data: CreateGameDto) => {
+        try {
+            await http.gameCreate(data, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            alert("Game created successfully!");
+        } catch (error) {
+            console.error("Error creating game:", error);
+            alert("Failed to create game.");
+        }
+    };
+
+    useEffect(() => {
+        const fetchRecentActivities = async () => {
+            try {
+                const gamesResponse = await http.gameList(
+                    { limit: 1, startAt: 0 },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+                const games = gamesResponse.data;
+                if (!games.length) {
+                    console.warn("No games found");
+                    return;
+                }
+
+                const latestGame = games[0];
+                const gameWeek = getWeekNumber(new Date(latestGame.startDate!));
+
+                if (latestGame?.id) {
+                    const winnersResponse = await http.winnerGameDetail(latestGame.id, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    const winners = winnersResponse.data.map((winner) => ({
+                        ...winner,
+                        gameWeek,
+                    }));
+                    setRecentWinners(winners.slice(0, 5));
+                }
+            } catch (error) {
+                console.error("Error fetching recent activities:", error);
+            }
+        };
+
+        fetchRecentActivities();
+    }, [token]);
+
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            if (!token) {
+                console.error("No token available. Please log in.");
+                return;
+            }
+
+            try {
+                const playersResponse = await http.playerList(
+                    { limit: 1000, startAt: 0 },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+                setPlayersCount(playersResponse.data.length);
+
+                const totalBalance = playersResponse.data.reduce(
+                    (sum: number, player: { balance?: number }) =>
+                        sum + (player.balance || 0),
+                    0
+                );
+                setTotalBalance(totalBalance);
+
+                const boardsResponse = await http.boardList(
+                    { limit: 1000, startAt: 0 },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+                setBoardsCount(boardsResponse.data.length);
+
+                const transactionsResponse = await http.transactionList(
+                    { limit: 1000, startAt: 0 },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+                setTransactionsCount(transactionsResponse.data.length);
+            } catch (err) {
+                console.error("Error fetching dashboard data:", err);
+            }
+        };
+
+        fetchDashboardData();
+    }, [token]);
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-800 to-pink-600 relative text-white">
             {/* Навбар */}
@@ -17,71 +144,72 @@ const AdminDashboard: React.FC = () => {
 
             {/* Контент */}
             <div className="container mx-auto p-6 relative z-10">
-                {/* Вітальний блок */}
-                <div className="   text-white text-center mb-8">
+                <div className="text-white text-center mb-8">
                     <h1 className="text-7xl font-bold">Welcome, Admin!</h1>
-                    <p className="mt-2">
+                    <p className="mt-2 text-xl">
                         All systems are running smoothly. You have 5 new notifications.
                     </p>
                 </div>
 
-                {/* Дашборд зі статистикою */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
                     <div className="bg-white text-gray-700 p-6 rounded shadow-lg">
-                        <h2 className="text-xl font-bold">Players</h2>
-                        <p className="text-3xl font-bold text-indigo-600">125</p>
+                        <h2 className="text-2xl font-bold">Players</h2>
+                        <p className="text-3xl font-bold text-indigo-600">{playersCount}</p>
                     </div>
                     <div className="bg-white text-gray-700 p-6 rounded shadow-lg">
-                        <h2 className="text-xl font-bold">Games</h2>
-                        <p className="text-3xl font-bold text-indigo-600">56</p>
+                        <h2 className="text-2xl font-bold">Boards</h2>
+                        <p className="text-3xl font-bold text-indigo-600">{boardsCount}</p>
                     </div>
                     <div className="bg-white text-gray-700 p-6 rounded shadow-lg">
-                        <h2 className="text-xl font-bold">Transactions</h2>
-                        <p className="text-3xl font-bold text-indigo-600">845</p>
+                        <h2 className="text-2xl font-bold">Transactions</h2>
+                        <p className="text-3xl font-bold text-indigo-600">{transactionsCount}</p>
                     </div>
                     <div className="bg-white text-gray-700 p-6 rounded shadow-lg">
-                        <h2 className="text-xl font-bold">Total Balance</h2>
-                        <p className="text-3xl font-bold text-indigo-600">DKK 452,300</p>
+                        <h2 className="text-2xl font-bold">Total Balance</h2>
+                        <p className="text-3xl font-bold text-indigo-600">DKK {totalBalance.toLocaleString()}</p>
                     </div>
                 </div>
 
-                {/* Кнопки швидкого доступу */}
                 <div className="flex justify-center gap-4 mb-8">
-                    <button className="btn btn-primary">Add New Game</button>
-                    <button className="btn btn-secondary">Add New Player</button>
-                    <button className="btn btn-accent">View Transactions</button>
+                    <button
+                        className="btn btn-primary"
+                        onClick={() => setIsModalOpen(true)}
+                    >
+                        Add New Game
+                    </button>
+                    <button
+                        className="btn btn-secondary"
+                        onClick={() => navigate("/register-player")}
+                    >
+                        Add New Player
+                    </button>
+                    <button
+                        className="btn btn-accent"
+                        onClick={() => navigate("/admin/transactions")}
+                    >
+                        View Transactions
+                    </button>
                 </div>
 
-                {/* Останні дії */}
                 <div className="bg-white text-gray-700 p-6 rounded shadow-lg">
-                    <h2 className="text-2xl font-bold mb-4">Recent Activities</h2>
-                    <ul className="list-disc list-inside">
-                        <li>John Doe won DKK 5,000 in Game #45</li>
-                        <li>New player: Alice Smith</li>
-                        <li>Transaction: Player ID 123 added DKK 1,200</li>
+                    <h2 className="text-3xl font-bold mb-4">Recent Activities</h2>
+                    <ul className="list-disc list-inside text-lg">
+                        {recentWinners.map((winner, index) => (
+                            <li key={index}>
+                                {winner.playerName} won DKK {winner.winningAmount?.toLocaleString()} in Week #
+                                {winner.gameWeek}
+                            </li>
+                        ))}
                     </ul>
                 </div>
             </div>
 
-            {/* SVG анімація */}
-            <div className="absolute inset-0 pointer-events-none z-0">
-                <svg
-                    className="absolute top-20 left-20 w-64 h-64 text-yellow-300 opacity-50 animate-spin-slow"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 200 200"
-                >
-                    <circle cx="100" cy="100" r="80" stroke="currentColor" strokeWidth="4"></circle>
-                </svg>
-                <svg
-                    className="absolute bottom-20 right-20 w-64 h-64 text-pink-300 opacity-50 animate-spin-reverse"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 200 200"
-                >
-                    <circle cx="100" cy="100" r="60" stroke="currentColor" strokeWidth="4"></circle>
-                </svg>
-            </div>
+            <EditGameModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                game={null}
+                onSubmit={handleCreateGame}
+            />
         </div>
     );
 };

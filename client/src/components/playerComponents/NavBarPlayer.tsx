@@ -51,8 +51,8 @@ const NavBarPlayer: FC = () => {
                         {/*</li>*/}
                     </ul>
                 </div>
-                <Link to=" " className="btn btn-black text-xl">
-                    Dead Pigeons
+                <Link to="/player" className="btn btn-black text-xl">
+                    Dead Pigeons Lottery!
                 </Link>
             </div>
             <div className="navbar-center hidden lg:flex">

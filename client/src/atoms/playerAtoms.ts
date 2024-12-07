@@ -13,4 +13,3 @@ export const isLoadingPlayersAtom = atom<boolean>(false);
 // Стан помилок
 export const playersErrorAtom = atom<string | null>(null);
 
-export const playerIdAtom = atom<string | null>(null);

@@ -90,11 +90,9 @@ const TransactionPage: React.FC = () => {
         <div className="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-800 to-pink-600 relative text-white">
             <NavBarAdmin />
 
-            {/* Тло */}
             <div className="absolute w-72 h-72 bg-purple-400 rounded-full opacity-30 top-10 left-10 blur-xl animate-pulse"></div>
             <div className="absolute w-96 h-96 bg-indigo-500 rounded-full opacity-20 bottom-10 right-10 blur-2xl animate-bounce"></div>
 
-            {/* Контент сторінки */}
             <div className="container mx-auto py-10 z-10">
                 <h1 className="text-3xl font-bold text-center mb-6">Transactions</h1>
 
@@ -105,12 +103,8 @@ const TransactionPage: React.FC = () => {
                         <table className="table-auto w-full text-left bg-white text-black rounded-lg shadow-lg border-collapse border border-gray-500">
                             <thead>
                             <tr>
-                                <th
-                                    className="border border-gray-500 px-4 py-2 cursor-pointer"
-                                    onClick={() => handleSort("playerName")}
-                                >
-                                    Player Name {sortColumn === "playerName" && (sortDirection === "asc" ? "↑" : "↓")}
-                                </th>
+                                <th className="border border-gray-500 px-4 py-2 text-left">#</th>
+                                <th className="border border-gray-500 px-4 py-2">Player Name</th>
                                 <th
                                     className="border border-gray-500 px-4 py-2 cursor-pointer"
                                     onClick={() => handleSort("amount")}
@@ -122,15 +116,19 @@ const TransactionPage: React.FC = () => {
                                     className="border border-gray-500 px-4 py-2 cursor-pointer"
                                     onClick={() => handleSort("transactionDate")}
                                 >
-                                    Transaction Date {sortColumn === "transactionDate" && (sortDirection === "asc" ? "↑" : "↓")}
+                                    Transaction Date{" "}
+                                    {sortColumn === "transactionDate" && (sortDirection === "asc" ? "↑" : "↓")}
                                 </th>
                                 <th className="border border-gray-500 px-4 py-2">Actions</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {transactions.map((transaction) => (
+                            {transactions.map((transaction, index) => (
                                 <tr key={transaction.id}>
-                                    <td className="border border-gray-500 px-4 py-2">{transaction.playerName || "Unknown"}</td>
+                                    <td className="border border-gray-500 px-4 py-2 text-left">{index + 1}</td>
+                                    <td className="border border-gray-500 px-4 py-2">
+                                        {transaction.playerName || "Unknown"}
+                                    </td>
                                     <td className="border border-gray-500 px-4 py-2">
                                         {editTransactionId === transaction.id ? (
                                             <div className="flex items-center">

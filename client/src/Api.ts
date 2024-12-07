@@ -865,7 +865,21 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-
+      /**
+       * Отримання списку перемог для гравця
+       * @tags Winner
+       * @name WinnerPlayerDetail
+       * @request GET:/api/Winner/player/{playerId}
+       * @secure
+       */
+      winnerPlayerDetail: (playerId: string, params: RequestParams = {}) =>
+          this.request<GetWinnerDto[], any>({
+              path: `/api/Winner/player/${playerId}`,
+              method: "GET",
+              secure: true,
+              format: "json",
+              ...params,
+          }),
     /**
      * No description
      *

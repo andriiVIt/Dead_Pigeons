@@ -10,6 +10,7 @@ module.exports = {
     plugins: [
         require('@tailwindcss/forms'),
         require('daisyui'),
+        require("tailwindcss-animate"),
     ],
     daisyui: {
         themes: [
@@ -48,4 +49,5 @@ module.exports = {
             "sunset",
         ],
     },
+
 }

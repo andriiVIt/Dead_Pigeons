@@ -34,6 +34,7 @@ public class WinnerController : ControllerBase
     }
     // Отримання детальної інформації про конкретного переможця
     [HttpGet]
+    
     [Route("{winnerId:guid}")]
     public ActionResult<GetWinnerDto> GetWinnerById(Guid winnerId)
     {
@@ -43,5 +44,16 @@ public class WinnerController : ControllerBase
             return NotFound();
         }
         return Ok(winner);
+    }
+    [HttpGet]
+    [Route("player/{playerId:guid}")]
+    public ActionResult<List<GetWinnerDto>> GetWinnersByPlayer(Guid playerId)
+    {
+        var winners = _winnerService.GetWinnersByPlayer(playerId);
+        if (winners == null || winners.Count == 0)
+        {
+            return NotFound();
+        }
+        return Ok(winners);
     }
 }
