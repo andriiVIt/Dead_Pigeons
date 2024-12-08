@@ -1,71 +1,78 @@
-// using System.Net.Http.Headers;
-// using API;
-// using DataAccess;
-// using Microsoft.AspNetCore.Mvc.Testing;
-// using Microsoft.EntityFrameworkCore;
-// using Microsoft.Extensions.DependencyInjection;
-// using Microsoft.Extensions.Hosting;
-// using PgCtx;
-// using Service;
-//
-// namespace ApiInterationTests;
-//
-// public class ApiTestBase : WebApplicationFactory<Program>
-// {
-//     public ApiTestBase()
-//     {
-//         PgCtxSetup = new PgCtxSetup<HospitalContext>();
-//         Environment.SetEnvironmentVariable(nameof(AppOptions) + ":" + nameof(AppOptions.DbConnectionString),
-//             PgCtxSetup._postgres.GetConnectionString());
-//         ApplicationServices = base.Services.CreateScope().ServiceProvider;
-//         TestHttpClient = CreateClient();
-//         //If you have enabled authentication, you can attach a default JWT for the http client
-//         TestHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(UserJwt);
-//         Seed().GetAwaiter().GetResult();
-//     }
-//
-//     /// <summary>
-//     ///     Data that will be populated before each test
-//     /// </summary>
-//     public async Task Seed()
-//     {
-//         var ctx = ApplicationServices.GetRequiredService<HospitalContext>();
-//
-//         //here you can seed some "default" test objects to the database before each test runs
-//
-//         ctx.SaveChanges();
-//     }
-//
-//
-//     protected override IHost CreateHost(IHostBuilder builder)
-//     {
-//         builder.ConfigureServices(services =>
-//         {
-//             var descriptor = services.SingleOrDefault(
-//                 d => d.ServiceType ==
-//                      typeof(DbContextOptions<HospitalContext>));
-//
-//             if (descriptor != null) services.Remove(descriptor);
-//
-//             services.AddDbContext<HospitalContext>(opt =>
-//             {
-//                 opt.UseNpgsql(PgCtxSetup._postgres.GetConnectionString());
-//                 opt.EnableSensitiveDataLogging(false);
-//                 opt.LogTo(_ => { });
-//             });
-//         });
-//         return base.CreateHost(builder);
-//     }
-//
-//     #region properties
-//
-//     public PgCtxSetup<HospitalContext> PgCtxSetup;
-//     public HttpClient TestHttpClient { get; set; }
-//
-//     public string UserJwt { get; set; } =
-//         "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.0Bk7pFvb2zgnomw3gUNpoCNq9fEhAD-qrzD38eOjo4PN0PZwiZbcssGRuslR0KG9umsY1lB0MFCH54eRSficnQ";
-//
-//     public IServiceProvider ApplicationServices { get; set; }
-//
-//     #endregion
-// }
+ using System.Net.Http.Headers;
+ using Api;
+ using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using PgCtx; // ваш пакет
+using DataAccess;
+using DataAccess.models;
+using Microsoft.Extensions.Logging;
+
+public class ApiTestBase : WebApplicationFactory<Program>
+{
+    public PgCtxSetup<AppDbContext> PgCtxSetup { get; }
+    public HttpClient Client { get; set; }
+    public IServiceProvider ApplicationServices { get; set; }
+     
+    private readonly string _jwtToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUwMDAiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUwMDAiLCJleHAiOjE3MzQyOTgyODQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJhZG1pbkBleGFtcGxlLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiZWYxZmY2ZTMtNzU0OC00NjMwLWE0NGItNjFhM2NlYTZlZWY2IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW4iLCJjdXJyZW50RGF0ZSI6IjIwMjQtMTItMDgiLCJpYXQiOjE3MzM2OTM0ODQsIm5iZiI6MTczMzY5MzQ4NH0.g4S0eGTWsDYbNHwgcczUbTKBNpTJMbuV8x61jHTVX1bttVsHsfCRwb_PWIGgqgCaeThgvw207RNS0b65GPKt1A";
+    public ApiTestBase()
+    {
+        PgCtxSetup = new PgCtxSetup<AppDbContext>();
+        ApplicationServices = Services.CreateScope().ServiceProvider;
+        Client = CreateClient();
+        using (var scope = ApplicationServices.CreateScope())
+        {
+            var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            ctx.Database.Migrate();
+        }
+
+        Seed().Wait();
+        // Якщо потрібно, можна додати авторизацію
+         Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUwMDAiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUwMDAiLCJleHAiOjE3MzQyOTgyODQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJhZG1pbkBleGFtcGxlLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiZWYxZmY2ZTMtNzU0OC00NjMwLWE0NGItNjFhM2NlYTZlZWY2IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW4iLCJjdXJyZW50RGF0ZSI6IjIwMjQtMTItMDgiLCJpYXQiOjE3MzM2OTM0ODQsIm5iZiI6MTczMzY5MzQ4NH0.g4S0eGTWsDYbNHwgcczUbTKBNpTJMbuV8x61jHTVX1bttVsHsfCRwb_PWIGgqgCaeThgvw207RNS0b65GPKt1A");
+
+        Seed().Wait();
+    }
+
+    
+    public async Task Seed()
+    {
+        using var scope = ApplicationServices.CreateScope();
+        var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        ctx.Database.Migrate();
+
+        // Створимо тестову гру
+        var game = new Game
+        {
+            Id = Guid.NewGuid(),
+            StartDate = DateTime.UtcNow,
+            WinningSequence = new List<int> {1,2,3} 
+        };
+        ctx.Games.Add(game);
+        await ctx.SaveChangesAsync();
+    }
+
+    protected override IHost CreateHost(IHostBuilder builder)
+    {builder.ConfigureLogging(logging =>
+        {
+            logging.ClearProviders();
+            logging.AddConsole();
+            logging.SetMinimumLevel(LogLevel.Debug);
+        });
+        builder.ConfigureServices(services =>
+        {
+            // Видаляємо оригінальний DbContext
+            var descriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
+            if (descriptor != null) services.Remove(descriptor);
+
+            // Підключаємо Postgres з використанням PgCtxSetup
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseNpgsql(PgCtxSetup._postgres.GetConnectionString());
+            });
+        });
+
+        return base.CreateHost(builder);
+    }
+}
