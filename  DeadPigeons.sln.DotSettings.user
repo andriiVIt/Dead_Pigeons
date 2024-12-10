@@ -6,6 +6,7 @@
     &lt;TestId&gt;xUnit::392E6137-1F41-4073-957B-3FEB267D095F::net8.0::TransactionControllerTests&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::392E6137-1F41-4073-957B-3FEB267D095F::net8.0::BoardControllerTests&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::392E6137-1F41-4073-957B-3FEB267D095F::net8.0::BoardsTests.CreateBoard_ReturnsOkAndBoard&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::392E6137-1F41-4073-957B-3FEB267D095F::net8.0::BoardsTests.DeleteBoard_RemovesBoardFromDatabase&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
 	</wpf:ResourceDictionary>

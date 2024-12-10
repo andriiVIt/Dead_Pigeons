@@ -130,4 +130,82 @@ public async Task DeleteTransaction_RemovesTransactionFromDatabase()
         }
     }
 }
+[Fact]
+public async Task UpdateTransaction_ReturnsOkAndUpdatedTransaction()
+{
+    Guid transactionId;
+
+    // Arrange: створення початкових даних
+    using (var scope = ApplicationServices.CreateScope())
+    {
+        var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        // Створюємо користувача
+        var user = new User
+        {
+            Id = Guid.NewGuid().ToString(),
+            UserName = "testupdate@example.com",
+            Email = "testupdate@example.com"
+        };
+        ctx.Users.Add(user);
+        ctx.SaveChanges();
+
+        // Створюємо гравця
+        var player = new Player
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            Name = "Update Test Player",
+            Balance = 300m,
+            IsActive = true
+        };
+        ctx.Players.Add(player);
+        ctx.SaveChanges();
+
+        // Створюємо транзакцію
+        var transaction = new Transaction
+        {
+            Id = Guid.NewGuid(),
+            PlayerId = player.Id,
+            Amount = 100m,
+            MobilePayTransactionId = "initial_transaction",
+            TransactionDate = DateTime.UtcNow
+        };
+        ctx.Transactions.Add(transaction);
+        ctx.SaveChanges();
+
+        transactionId = transaction.Id; // Зберігаємо ID транзакції
+    }
+
+    // DTO для оновлення транзакції
+    var updateDto = new
+    {
+        Amount = 200m,
+        MobilePayTransactionId = "updated_transaction"
+    };
+
+    // Act: відправляємо PUT запит для оновлення транзакції
+    var response = await Client.PutAsJsonAsync($"/api/Transaction/{transactionId}", updateDto);
+
+    // Assert: перевірка статусу відповіді
+    response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+    // Перевіряємо, що транзакція була оновлена
+    var updatedTransaction = await response.Content.ReadFromJsonAsync<GetTransactionDto>();
+    updatedTransaction.Should().NotBeNull();
+    updatedTransaction!.Id.Should().Be(transactionId);
+    updatedTransaction.Amount.Should().Be(200m);
+    updatedTransaction.MobilePayTransactionId.Should().Be("updated_transaction");
+
+    // Перевірка в базі даних
+    using (var freshScope = ApplicationServices.CreateScope())
+    {
+        var freshCtx = freshScope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var transactionInDb = freshCtx.Transactions.Find(transactionId);
+
+        transactionInDb.Should().NotBeNull();
+        transactionInDb!.Amount.Should().Be(200m); // Перевіряємо оновлену суму
+        transactionInDb.MobilePayTransactionId.Should().Be("updated_transaction"); // Перевіряємо оновлений ID
+    }
+}
 }
