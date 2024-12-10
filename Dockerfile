@@ -15,12 +15,14 @@ COPY server/API/. ./server/API/
 COPY server/DataAccess/. ./server/DataAccess/
 COPY server/Service/. ./server/Service/
 COPY server/ApiIntegrationTests/. ./server/ApiIntegrationTests/
+RUN dotnet restore
+
 RUN dotnet publish -c release -o /app --no-restore
 
 # Final stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
- # Copy the published output from the build stage
+ # Copy the pu%blished output from the build stage
 COPY --from=build /app ./
-# Entry point for the application
+EXPOSE 8080
 ENTRYPOINT ["dotnet", "API.dll"]
