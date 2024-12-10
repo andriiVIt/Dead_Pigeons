@@ -11,6 +11,7 @@
     &lt;TestId&gt;xUnit::392E6137-1F41-4073-957B-3FEB267D095F::net8.0::DbSeederTests.SeedAsync_ShouldCreateRolesAndUsers&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::392E6137-1F41-4073-957B-3FEB267D095F::net8.0::Generated.Requests.RegisterUser.RegisterUser_CreatesUserSuccessfully&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::392E6137-1F41-4073-957B-3FEB267D095F::net8.0::Generated.Requests.RegisterUser&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::392E6137-1F41-4073-957B-3FEB267D095F::net8.0::Generated.Requests.AuthUserTest.Logout_ShouldReturnSuccess&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
 	</wpf:ResourceDictionary>

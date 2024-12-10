@@ -1,20 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+ 
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
+ 
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Swashbuckle.AspNetCore.Annotations;
-using DataAccess.models; // для User, Player
-using DataAccess; // для AppDbContext
+ 
+using DataAccess.models;  
+using DataAccess;  
 using Microsoft.AspNetCore.Identity;
-using Service; // для UserManager, IdentityRole
-using Generated.Requests;
+using Service;  
+ 
 namespace Generated.Requests;
 
-public class RegisterUser  : ApiTestBase
+public class AuthUserTest  : ApiTestBase
 {
     [Fact]
     public async Task RegisterUser_CreatesUserSuccessfully()
@@ -60,5 +59,17 @@ public class RegisterUser  : ApiTestBase
             player.Balance.Should().Be(0);
             player.IsActive.Should().BeTrue();
         }
+    }
+    [Fact]
+    public async Task Logout_ShouldReturnSuccess()
+    {
+        // Arrange
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+
+        // Act
+        var response = await Client.PostAsync("/api/auth/logout", null);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
     }

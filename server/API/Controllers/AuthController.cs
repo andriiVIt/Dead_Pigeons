@@ -99,6 +99,7 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("logout")]
+    [Authorize]
     public async Task<IResult> Logout([FromServices] SignInManager<User> signInManager)
     {
         await signInManager.SignOutAsync();
