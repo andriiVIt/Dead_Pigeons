@@ -195,7 +195,7 @@ public class Program
         app.UseAuthorization();
         app.MapControllers();
 
-        var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+        var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
         var url = $"http://0.0.0.0:{port}";
         app.Run(url);
 
