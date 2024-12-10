@@ -27,6 +27,7 @@ public class PlayerController : ControllerBase
 
     [HttpPut]
     [Route("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public ActionResult<GetPlayerDto> UpdatePlayer(Guid id, [FromBody] UpdatePlayerDto updatePlayerDto)
     {
         var player = _service.UpdatePlayer(id, updatePlayerDto);
@@ -56,6 +57,7 @@ public class PlayerController : ControllerBase
     [HttpDelete]
      
     [Route("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeletePlayer(Guid id)
     {
         // Використовуємо сервіс для видалення гравця
