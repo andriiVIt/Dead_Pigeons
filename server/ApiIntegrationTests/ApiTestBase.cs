@@ -7,7 +7,9 @@ using Microsoft.Extensions.Hosting;
 using PgCtx; // ваш пакет
 using DataAccess;
 using DataAccess.models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Service;
 
 public class ApiTestBase : WebApplicationFactory<Program>
 {
@@ -39,8 +41,29 @@ public class ApiTestBase : WebApplicationFactory<Program>
     {
         using var scope = ApplicationServices.CreateScope();
         var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         ctx.Database.Migrate();
+        if (!await roleManager.RoleExistsAsync(Role.Admin))
+        {
+            await roleManager.CreateAsync(new IdentityRole(Role.Admin));
+        }
 
+        if (!await roleManager.RoleExistsAsync(Role.Player))
+        {
+            await roleManager.CreateAsync(new IdentityRole(Role.Player));
+        }
+        // Додайте тестового адміністратора
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        var adminUser = new User { UserName = "admin@test.com", Email = "admin@test.com" };
+
+        if (await userManager.FindByEmailAsync(adminUser.Email) == null)
+        {
+            var result = await userManager.CreateAsync(adminUser, "Admin123!");
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(adminUser, Role.Admin);
+            }
+        }
         // Створимо тестову гру
         var game = new Game
         {

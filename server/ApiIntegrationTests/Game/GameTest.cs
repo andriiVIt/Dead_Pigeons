@@ -80,6 +80,65 @@ public class GameTests : ApiTestBase
         }
     }
     // [Fact]
+    // public async Task UpdateGame_UpdatesGameSuccessfully()
+    // {
+    //     // Arrange: створіть гру через POST-запит
+    //     var createDto = new CreateGameDto
+    //     {
+    //         StartDate = DateTime.UtcNow,
+    //         EndDate = DateTime.UtcNow.AddMinutes(10),
+    //         WinningSequence = new List<int> { 1, 2, 3 }
+    //     };
+    //
+    //     var createResponse = await Client.PostAsJsonAsync("/api/game", createDto);
+    //     createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+    //
+    //     var createdGame = await createResponse.Content.ReadFromJsonAsync<GetGameDto>();
+    //     createdGame.Should().NotBeNull();
+    //     createdGame!.WinningSequence.Should().ContainInOrder(1, 2, 3);
+    //
+    //     // Act: підготуйте DTO для оновлення і виконайте PUT-запит
+    //     var updateDto = new UpdateGameDto
+    //     {
+    //         StartDate = createdGame.StartDate.AddMinutes(-5),
+    //         EndDate = createdGame.EndDate?.AddMinutes(5),
+    //         WinningSequence = new List<int> { 4, 5, 6 }
+    //     };
+    //
+    //     var updateResponse = await Client.PutAsJsonAsync($"/api/game/{createdGame.Id}", updateDto);
+    //     updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+    //
+    //     // Assert: перевірте результат оновлення
+    //     var updatedGame = await updateResponse.Content.ReadFromJsonAsync<GetGameDto>();
+    //     updatedGame.Should().NotBeNull();
+    //     updatedGame!.Id.Should().Be(createdGame.Id);
+    //     updatedGame.WinningSequence.Should().ContainInOrder(4, 5, 6);
+    //     updatedGame.StartDate.Should().Be(updateDto.StartDate);
+    //     updatedGame.EndDate.Should().Be(updateDto.EndDate);
+    //
+    //     // Перевірка в базі даних
+    //     using (var scope = ApplicationServices.CreateScope())
+    //     {
+    //         var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    //         var gameInDb = ctx.Games.Find(createdGame.Id);
+    //
+    //         gameInDb.Should().NotBeNull();
+    //         gameInDb!.WinningSequence.Should().ContainInOrder(4, 5, 6);
+    //         gameInDb.StartDate.Should().BeCloseTo(updateDto.StartDate.UtcDateTime, TimeSpan.FromSeconds(1));
+    //         if (updateDto.EndDate.HasValue)
+    //         {
+    //             gameInDb.EndDate.Should().BeCloseTo(updateDto.EndDate.Value.UtcDateTime, TimeSpan.FromSeconds(1));
+    //         }
+    //         else
+    //         {
+    //             gameInDb.EndDate.Should().BeNull();
+    //         }
+    //     }
+    // }
+   
+        
+        
+        // [Fact]
     // public async Task CreateGame_ReturnsOkAndCreatesGame()
     // {
     //     // Тепер токен встановлено
@@ -99,3 +158,4 @@ public class GameTests : ApiTestBase
     //     createdGame!.WinningSequence.Should().ContainInOrder(1, 2, 3);
     // }
 }
+    
