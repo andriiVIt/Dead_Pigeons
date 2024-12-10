@@ -1,6 +1,9 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using DataAccess;
+using DataAccess.models;
 using FluentAssertions;
 using Generated;
 using Microsoft.Extensions.DependencyInjection; // Якщо ви встановили FluentAssertions
@@ -42,11 +45,44 @@ public class GameTests : ApiTestBase
         var content = await response.Content.ReadAsStringAsync();
         // Перевіримо, що контент містить Id гри та якусь частину даних
         content.Should().Contain(game.Id.ToString());
+        
+    }
+    [Fact]
+    public async Task DeleteGame_RemovesGameFromDatabase()
+    {
+        using (var scope = ApplicationServices.CreateScope())
+        {
+            var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            // Створюємо гру для тесту
+            var game = new Game
+            {
+                Id = Guid.NewGuid(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow.AddMinutes(10),
+                WinningSequence = new List<int> { 1, 2, 3 }
+            };
+            ctx.Games.Add(game);
+            ctx.SaveChanges();
+
+            // Перевіряємо, що гра є в базі
+            var existingGame = ctx.Games.Find(game.Id);
+            existingGame.Should().NotBeNull();
+
+            // Відправляємо DELETE-запит
+            var response = await Client.DeleteAsync($"/api/game/{game.Id}");
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+            // Перевіряємо, що гра видалена
+            using var freshCtx = ApplicationServices.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
+            var deletedGame = freshCtx.Games.Find(game.Id);
+            deletedGame.Should().BeNull();
+        }
     }
     // [Fact]
     // public async Task CreateGame_ReturnsOkAndCreatesGame()
     // {
-    //     // Формуємо дані для створення нової гри
+    //     // Тепер токен встановлено
     //     var dto = new CreateGameDto
     //     {
     //         StartDate = DateTime.UtcNow,
@@ -54,29 +90,12 @@ public class GameTests : ApiTestBase
     //         WinningSequence = new List<int> { 1, 2, 3 }
     //     };
     //
-    //     // Надсилаємо POST запит до /api/game
     //     var response = await Client.PostAsJsonAsync("/api/game", dto);
-    //     // Додаємо вивід відповіді у консоль
-    //     var content = await response.Content.ReadAsStringAsync();
-    //     Assert.True(response.IsSuccessStatusCode, $"Response was not OK. StatusCode: {response.StatusCode}, Content: {content}");
-    //     Console.WriteLine("Response content: " + content);
     //
-    //     // Тепер перевіряємо статус-код
-    //     response.StatusCode.Should().Be(HttpStatusCode.OK);
-    //     
-    //     
-    //     
+    //     response.IsSuccessStatusCode.Should().BeTrue($"Response was not OK. StatusCode: {response.StatusCode}");
     //
-    //     // Перевіримо вміст відповіді
     //     var createdGame = await response.Content.ReadFromJsonAsync<GetGameDto>();
     //     createdGame.Should().NotBeNull();
-    //     createdGame!.WinningSequence.Should().ContainInOrder(10, 20, 30);
-    //
-    //     // Перевіримо, чи гра дійсно створилась у БД
-    //     using var scope = ApplicationServices.CreateScope();
-    //     var ctx = scope.ServiceProvider.GetRequiredService<DataAccess.AppDbContext>();
-    //     var dbGame = ctx.Games.FirstOrDefault(g => g.Id == createdGame.Id);
-    //     dbGame.Should().NotBeNull();
-    //     dbGame!.WinningSequence.Should().ContainInOrder(10, 20, 30);
+    //     createdGame!.WinningSequence.Should().ContainInOrder(1, 2, 3);
     // }
 }
