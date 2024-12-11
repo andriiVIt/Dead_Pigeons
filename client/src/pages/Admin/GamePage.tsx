@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import NavBarAdmin from "/src/components/adminComponents/NavBarAdmin.tsx";
 import { useAtom } from "jotai";
 import {
@@ -19,6 +19,7 @@ const GamePage: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = React.useState(false);
     const [sortColumn, setSortColumn] = useState<string | null>(null);
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
     useEffect(() => {
         const fetchGames = async () => {
             setIsLoading(true);
@@ -71,7 +72,9 @@ const GamePage: React.FC = () => {
                 const response = await http.gameUpdate(selectedGame.id!, {
                     ...data,
                     startDate: new Date(data.startDate!).toISOString(),
-                    endDate: data.endDate ? new Date(data.endDate).toISOString() : undefined,
+                    endDate: data.endDate
+                        ? new Date(data.endDate).toISOString()
+                        : undefined,
                 });
                 setGames((prev) =>
                     prev.map((game) =>
@@ -101,14 +104,28 @@ const GamePage: React.FC = () => {
         const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
         return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
     };
+
+    const formatDate = (dateString: string | null | undefined) => {
+        if (!dateString) return "N/A";
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-GB"); // формат dd/MM/yyyy
+    };
+
     const handleSort = (column: string) => {
-        const direction = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
+        const direction =
+            sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
         setSortColumn(column);
         setSortDirection(direction);
 
         const sortedGames = [...games].sort((a, b) => {
-            const aValue = column === "week" ? getWeekNumber(a.startDate) : a[column as keyof GetGameDto];
-            const bValue = column === "week" ? getWeekNumber(b.startDate) : b[column as keyof GetGameDto];
+            const aValue =
+                column === "week"
+                    ? getWeekNumber(a.startDate)
+                    : a[column as keyof GetGameDto];
+            const bValue =
+                column === "week"
+                    ? getWeekNumber(b.startDate)
+                    : b[column as keyof GetGameDto];
 
             if (aValue === bValue) return 0;
             if (aValue == null) return direction === "asc" ? -1 : 1;
@@ -143,13 +160,14 @@ const GamePage: React.FC = () => {
                 <table className="table-auto w-full bg-white text-black rounded shadow">
                     <thead>
                     <tr>
+                        <th className="px-4 py-2 border">#</th>
                         <th
                             className="px-4 py-2 border cursor-pointer"
                             onClick={() => handleSort("week")}
                         >
-                            Game Week {sortColumn === "week" && (sortDirection === "asc" ? "↑" : "↓")}
+                            Game Week{" "}
+                            {sortColumn === "week" && (sortDirection === "asc" ? "↑" : "↓")}
                         </th>
-                        <th className="px-4 py-2 border">Game Week</th>
                         <th className="px-4 py-2 border">Start Date</th>
                         <th className="px-4 py-2 border">End Date</th>
                         <th className="px-4 py-2 border">Winning Sequence</th>
@@ -157,13 +175,14 @@ const GamePage: React.FC = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {games.map((game) => (
+                    {games.map((game, index) => (
                         <tr key={game.id}>
+                            <td className="px-4 py-2 border">{index + 1}</td>
                             <td className="px-4 py-2 border">
                                 {getWeekNumber(game.startDate)}
                             </td>
-                            <td className="px-4 py-2 border">{game.startDate || "N/A"}</td>
-                            <td className="px-4 py-2 border">{game.endDate || "N/A"}</td>
+                            <td className="px-4 py-2 border">{formatDate(game.startDate)}</td>
+                            <td className="px-4 py-2 border">{formatDate(game.endDate)}</td>
                             <td className="px-4 py-2 border">
                                 {game.winningSequence?.join(", ") || "N/A"}
                             </td>
