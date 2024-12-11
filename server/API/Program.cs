@@ -32,14 +32,17 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         #region Configuration
+
         builder
             .Services.AddOptionsWithValidateOnStart<AppOptions>()
             .Bind(builder.Configuration.GetSection(nameof(AppOptions)))
             .ValidateDataAnnotations();
         builder.Services.AddSingleton(_ => TimeProvider.System);
+
         #endregion
 
         #region Data Access
+
         var connectionString = builder.Configuration.GetConnectionString("AppDb");
         builder.Services.AddDbContext<AppDbContext>(options =>
             options
@@ -47,7 +50,7 @@ public class Program
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
                 .EnableSensitiveDataLogging()
         );
-        
+
         builder.Services.AddScoped<DbSeeder>();
         builder.Services.AddScoped<IRepository<User>, UserRepository>();
         // builder.Services.AddScoped<ITokenClaimsService, JwtTokenClaimService>();
@@ -55,14 +58,15 @@ public class Program
         {
             options.AddPolicy("AllowFrontend", policy =>
             {
-                policy.WithOrigins("http://localhost:5001")  
-                    .AllowAnyMethod()  
-                    .AllowAnyHeader();  
+                policy.WithOrigins("https://pigeonsdead.web.app","http://localhost:5001")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
             });
         });
+
         #endregion
 
-          
+
         builder
             .Services.AddIdentityApiEndpoints<User>()
             .AddRoles<IdentityRole>()
@@ -77,11 +81,8 @@ public class Program
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(o =>
-            {
-                o.TokenValidationParameters = JwtTokenClaimService.ValidationParameters(options);
-            });
-       
+            .AddJwtBearer(o => { o.TokenValidationParameters = JwtTokenClaimService.ValidationParameters(options); });
+
         builder.Services.AddAuthorization(options =>
         {
             options.FallbackPolicy = new AuthorizationPolicyBuilder()
@@ -91,14 +92,14 @@ public class Program
         });
         builder.Services.AddScoped<ITokenClaimsService, JwtTokenClaimService>();
         builder.Services.AddSingleton<IEmailSender<User>, AppEmailSender>();
-        
-        
+
+
         #region FluentValidation
-         
+
         builder.Services.AddFluentValidationAutoValidation()
             .AddFluentValidationClientsideAdapters();
         builder.Services.AddValidatorsFromAssemblyContaining<ServiceAssembly>();
-        
+
         // builder.Services.AddScoped<IValidator<CreatePlayerDto>, CreatePlayerDtoValidator>();
         builder.Services.AddScoped<IValidator<UpdatePlayerDto>, UpdatePlayerDtoValidator>();
         builder.Services.AddScoped<IValidator<CreateGameDto>, CreateGameDtoValidator>();
@@ -106,18 +107,22 @@ public class Program
         builder.Services.AddScoped<IValidator<CreateBoardDto>, CreateBoardDtoValidator>();
         builder.Services.AddScoped<IValidator<CreateTransactionDto>, CreateTransactionDtoValidator>();
         builder.Services.AddScoped<IValidator<UpdateTransactionDto>, UpdateTransactionDtoValidator>();
+
         #endregion
 
         #region Services
+
         builder.Services.AddValidatorsFromAssemblyContaining<ServiceAssembly>();
         builder.Services.AddScoped<IPlayerService, PlayerService>();
         builder.Services.AddScoped<IGameService, GameService>();
         builder.Services.AddScoped<ITransactionService, TransactionService>();
-         builder.Services.AddScoped<IBoardService, BoardService>();
-         builder.Services.AddScoped<IWinnerService, WinnerService>();
+        builder.Services.AddScoped<IBoardService, BoardService>();
+        builder.Services.AddScoped<IWinnerService, WinnerService>();
+
         #endregion
 
         #region Swagger
+
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(c =>
@@ -153,6 +158,7 @@ public class Program
                 }
             );
         });
+
         #endregion
 
         builder.Services.AddControllers();
@@ -173,16 +179,11 @@ public class Program
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
-            app.UseSwagger(c =>
-            {
-                c.RouteTemplate = "api/swagger/{documentname}/swagger.json";
-            });
+            app.UseSwagger(c => { c.RouteTemplate = "api/swagger/{documentname}/swagger.json"; });
 
-            app.UseSwaggerUI(c =>
-            {
-                c.RoutePrefix = "api/swagger";
-            });
+            app.UseSwaggerUI(c => { c.RoutePrefix = "api/swagger"; });
         }
+
         // app.MapGet("/", context =>
         // {
         //     context.Response.Redirect("/api/swagger/index.html");
@@ -190,11 +191,17 @@ public class Program
         // });
         app.UseHttpsRedirection();
         // app.MapIdentityApi<User>();
-        app.UseCors("AllowFrontend");
-        app.UseAuthentication();
+        //app.UseCors("AllowFrontend");
+        app.UseCors(opts => opts.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+    
+
+    app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
 
-        app.Run();
+        var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+        var url = $"http://0.0.0.0:{port}";
+        app.Run(url);
+
     }
 }

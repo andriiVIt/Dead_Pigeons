@@ -90,52 +90,54 @@ const TransactionPage: React.FC = () => {
         <div className="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-800 to-pink-600 relative text-white">
             <NavBarAdmin />
 
-            <div className="absolute w-72 h-72 bg-purple-400 rounded-full opacity-30 top-10 left-10 blur-xl animate-pulse"></div>
-            <div className="absolute w-96 h-96 bg-indigo-500 rounded-full opacity-20 bottom-10 right-10 blur-2xl animate-bounce"></div>
+            {/* Background animations */}
 
-            <div className="container mx-auto py-10 z-10">
-                <h1 className="text-3xl font-bold text-center mb-6">Transactions</h1>
+            {/* Main content */}
+            <div className="container mx-auto py-6 lg:py-10 z-10">
+                <h1 className="text-2xl lg:text-3xl font-bold text-center mb-6">Transactions</h1>
 
                 {loading ? (
                     <p className="text-center text-lg">Loading transactions...</p>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="table-auto w-full text-left bg-white text-black rounded-lg shadow-lg border border-gray-200">
+                        <table className="table-auto w-full bg-white text-black rounded-lg shadow-lg border-collapse border border-gray-300">
                             <thead className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
                             <tr>
-                                <th className="px-6 py-3">#</th>
-                                <th className="px-6 py-3">Player Name</th>
+                                <th className="px-4 lg:px-6 py-2 lg:py-3 text-center">#</th>
+                                <th className="px-4 lg:px-6 py-2 lg:py-3 text-left">Player Name</th>
                                 <th
-                                    className="px-6 py-3 cursor-pointer"
+                                    className="px-4 lg:px-6 py-2 lg:py-3 text-left cursor-pointer"
                                     onClick={() => handleSort("amount")}
                                 >
                                     Amount {sortColumn === "amount" && (sortDirection === "asc" ? "↑" : "↓")}
                                 </th>
-                                <th className="px-6 py-3">MobilePay Transaction ID</th>
+                                <th className="px-4 lg:px-6 py-2 lg:py-3 text-left">MobilePay Transaction ID</th>
                                 <th
-                                    className="px-6 py-3 cursor-pointer"
+                                    className="px-4 lg:px-6 py-2 lg:py-3 text-left cursor-pointer"
                                     onClick={() => handleSort("transactionDate")}
                                 >
                                     Transaction Date{" "}
                                     {sortColumn === "transactionDate" && (sortDirection === "asc" ? "↑" : "↓")}
                                 </th>
-                                <th className="px-6 py-3">Actions</th>
+                                <th className="px-4 lg:px-6 py-2 lg:py-3 text-left">Actions</th>
                             </tr>
                             </thead>
                             <tbody>
                             {transactions.map((transaction, index) => (
                                 <tr
                                     key={transaction.id}
-                                    className="hover:bg-gray-100 border-b border-gray-300 transition duration-300"
+                                    className={`hover:bg-gray-100 transition duration-300 ${
+                                        index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                                    }`}
                                 >
-                                    <td className="px-6 py-4 text-center">{index + 1}</td>
-                                    <td className="px-6 py-4">{transaction.playerName || "Unknown"}</td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-4 lg:px-6 py-2 lg:py-3 text-center">{index + 1}</td>
+                                    <td className="px-4 lg:px-6 py-2 lg:py-3 text-gray-900">{transaction.playerName || "Unknown"}</td>
+                                    <td className="px-4 lg:px-6 py-2 lg:py-3">
                                         {editTransactionId === transaction.id ? (
                                             <div className="flex items-center">
                                                 <input
                                                     type="number"
-                                                    className="border border-gray-300 rounded px-3 py-1 text-black"
+                                                    className="border border-gray-300 rounded px-2 lg:px-3 py-1 lg:py-2 text-black"
                                                     value={editAmount ?? transaction.amount}
                                                     onChange={(e) => setEditAmount(Number(e.target.value))}
                                                 />
@@ -145,31 +147,23 @@ const TransactionPage: React.FC = () => {
                                             `${transaction.amount} DKK`
                                         )}
                                     </td>
-                                    <td className="px-6 py-4">
-                                        {transaction.mobilePayTransactionId || "N/A"}
-                                    </td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-4 lg:px-6 py-2 lg:py-3">{transaction.mobilePayTransactionId || "N/A"}</td>
+                                    <td className="px-4 lg:px-6 py-2 lg:py-3">
                                         {transaction.transactionDate
-                                            ? new Date(transaction.transactionDate).toLocaleDateString("en-GB", {
-                                                day: "2-digit",
-                                                month: "2-digit",
-                                                year: "numeric",
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                            })
+                                            ? new Date(transaction.transactionDate).toLocaleString()
                                             : "N/A"}
                                     </td>
-                                    <td className="px-6 py-4 flex space-x-2">
+                                    <td className="px-4 lg:px-6 py-2 lg:py-3 flex space-x-2">
                                         {editTransactionId === transaction.id ? (
                                             <button
-                                                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded shadow"
+                                                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded shadow text-sm lg:text-base"
                                                 onClick={handleEdit}
                                             >
                                                 Save
                                             </button>
                                         ) : (
                                             <button
-                                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow"
+                                                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded shadow text-sm lg:text-base"
                                                 onClick={() => {
                                                     setEditTransactionId(transaction.id!);
                                                     setEditAmount(transaction.amount!);
@@ -179,7 +173,7 @@ const TransactionPage: React.FC = () => {
                                             </button>
                                         )}
                                         <button
-                                            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded shadow"
+                                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded shadow text-sm lg:text-base"
                                             onClick={() => handleDelete(transaction.id!)}
                                         >
                                             Delete

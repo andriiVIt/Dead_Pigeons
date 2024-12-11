@@ -80,63 +80,69 @@ const PlayersPage: React.FC = () => {
         <div className="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-800 to-pink-600 relative text-white">
             <NavBarAdmin />
             <div className="container mx-auto p-4">
-                <h1 className="text-3xl font-bold text-center mb-6">Manage Players</h1>
-                <div className="mb-4">
+                <h1 className="text-2xl lg:text-3xl font-bold text-center mb-6">Manage Players</h1>
+                <div className="mb-4 text-center">
                     <button
-                        className="bg-green-500 text-white px-4 py-2 rounded"
+                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm lg:text-base"
                         onClick={handleRegisterNewPlayer}
                     >
                         Register New Player
                     </button>
                 </div>
-                {isLoading && <p>Loading players...</p>}
-                {error && <p className="text-red-500">{error}</p>}
-                <table className="table-auto w-full bg-white text-black rounded-lg shadow-lg border border-gray-200">
-                    <thead className="bg-gradient-to-r from-green-500 to-blue-500 text-white">
-                    <tr>
-                        <th className="px-6 py-3">Name</th>
-                        <th className="px-6 py-3">Balance</th>
-                        <th className="px-6 py-3">Status</th>
-                        <th className="px-6 py-3">Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {players.map((player, index) => (
-                        <tr
-                            key={player.id}
-                            className={`hover:bg-gray-100 transition duration-300 ${
-                                player.isActive ? "bg-green-50" : "bg-red-50"
-                            }`}
-                        >
-                            <td className="px-6 py-4 border-b text-gray-900">{player.name}</td>
-                            <td className="px-6 py-4 border-b text-gray-900">{player.balance} DKK</td>
-                            <td className="px-6 py-4 border-b">
-                    <span
-                        className={`px-3 py-1 rounded-full text-white ${
-                            player.isActive ? "bg-green-500" : "bg-red-500"
-                        }`}
-                    >
-                        {player.isActive ? "Active" : "Inactive"}
-                    </span>
-                            </td>
-                            <td className="px-6 py-4 border-b flex space-x-2">
-                                <button
-                                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow"
-                                    onClick={() => handleEdit(player)}
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded shadow"
-                                    onClick={() => handleDelete(player.id!)}
-                                >
-                                    Delete
-                                </button>
-                            </td>
+                {isLoading && <p className="text-center text-lg">Loading players...</p>}
+                {error && <p className="text-center text-red-500">{error}</p>}
+                <div className="overflow-x-auto">
+                    <table className="table-auto w-full bg-white text-black rounded-lg shadow-lg border border-gray-200">
+                        <thead className="bg-gradient-to-r from-green-500 to-blue-500 text-white">
+                        <tr>
+                            <th className="px-4 lg:px-6 py-2 lg:py-3">Name</th>
+                            <th className="px-4 lg:px-6 py-2 lg:py-3">Balance</th>
+                            <th className="px-4 lg:px-6 py-2 lg:py-3">Status</th>
+                            <th className="px-4 lg:px-6 py-2 lg:py-3">Actions</th>
                         </tr>
-                    ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {players.map((player, index) => (
+                            <tr
+                                key={player.id}
+                                className={`hover:bg-gray-100 transition duration-300 ${
+                                    player.isActive ? "bg-green-50" : "bg-red-50"
+                                }`}
+                            >
+                                <td className="px-4 lg:px-6 py-2 lg:py-4 border-b text-gray-900">
+                                    {player.name}
+                                </td>
+                                <td className="px-4 lg:px-6 py-2 lg:py-4 border-b text-gray-900">
+                                    {player.balance} DKK
+                                </td>
+                                <td className="px-4 lg:px-6 py-2 lg:py-4 border-b text-center">
+                                    <span
+                                        className={`px-2 lg:px-3 py-1 rounded-full text-xs lg:text-sm text-white ${
+                                            player.isActive ? "bg-green-500" : "bg-red-500"
+                                        }`}
+                                    >
+                                        {player.isActive ? "Active" : "Inactive"}
+                                    </span>
+                                </td>
+                                <td className="px-4 lg:px-6 py-2 lg:py-4 border-b flex justify-center space-x-2">
+                                    <button
+                                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 lg:px-4 py-1 lg:py-2 rounded shadow text-sm lg:text-base"
+                                        onClick={() => handleEdit(player)}
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        className="bg-red-500 hover:bg-red-600 text-white px-3 lg:px-4 py-1 lg:py-2 rounded shadow text-sm lg:text-base"
+                                        onClick={() => handleDelete(player.id!)}
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             {/* Edit Player Modal */}
             <EditPlayerModal

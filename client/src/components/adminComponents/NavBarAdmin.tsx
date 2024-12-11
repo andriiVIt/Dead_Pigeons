@@ -49,11 +49,7 @@ const NavBarAdmin: React.FC = () => {
                                 Boards
                             </Link>
                         </li>
-                        <li>
-                            <Link to="/admin/history" className="hover:text-blue-500 transition-colors">
-                                History
-                            </Link>
-                        </li>
+
                     </ul>
                 </div>
                 <Link to="/admin" className="btn btn-black text-xl">

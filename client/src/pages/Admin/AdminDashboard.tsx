@@ -134,70 +134,59 @@ const AdminDashboard: React.FC = () => {
             {/* Навбар */}
             <NavBarAdmin />
 
-            {/* Фонова анімація */}
-            <div
-                className="absolute w-72 h-72 bg-purple-400 rounded-full opacity-30 top-10 left-10 blur-xl animate-pulse"
-            ></div>
-            <div
-                className="absolute w-96 h-96 bg-indigo-500 rounded-full opacity-20 bottom-10 right-10 blur-2xl animate-bounce"
-            ></div>
-
             {/* Контент */}
-            <div className="container mx-auto p-6 relative z-10">
+            <div className="container mx-auto px-4 py-6 relative z-10 mt-36">
                 <div className="text-white text-center mb-8">
-                    <h1 className="text-7xl font-bold">Welcome, Admin!</h1>
-                    <p className="mt-2 text-xl">
-                        All systems are running smoothly. You have 5 new notifications.
-                    </p>
+
+                    <h1 className="text-6xl md:text-1xl font-bold">Welcome, Admin!</h1>
                 </div>
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
-                    <div className="bg-white text-gray-700 p-6 rounded shadow-lg">
-                        <h2 className="text-2xl font-bold">Players</h2>
-                        <p className="text-3xl font-bold text-indigo-600">{playersCount}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8 mb-8">
+                    <div className="bg-white text-gray-700 p-4 md:p-6 rounded shadow-lg">
+                        <h2 className="text-xl md:text-2xl font-bold">Players</h2>
+                        <p className="text-2xl md:text-3xl font-bold text-indigo-600">{playersCount}</p>
                     </div>
-                    <div className="bg-white text-gray-700 p-6 rounded shadow-lg">
-                        <h2 className="text-2xl font-bold">Boards</h2>
-                        <p className="text-3xl font-bold text-indigo-600">{boardsCount}</p>
+                    <div className="bg-white text-gray-700 p-4 md:p-6 rounded shadow-lg">
+                        <h2 className="text-xl md:text-2xl font-bold">Boards</h2>
+                        <p className="text-2xl md:text-3xl font-bold text-indigo-600">{boardsCount}</p>
                     </div>
-                    <div className="bg-white text-gray-700 p-6 rounded shadow-lg">
-                        <h2 className="text-2xl font-bold">Transactions</h2>
-                        <p className="text-3xl font-bold text-indigo-600">{transactionsCount}</p>
+                    <div className="bg-white text-gray-700 p-4 md:p-6 rounded shadow-lg">
+                        <h2 className="text-xl md:text-2xl font-bold">Transactions</h2>
+                        <p className="text-2xl md:text-3xl font-bold text-indigo-600">{transactionsCount}</p>
                     </div>
-                    <div className="bg-white text-gray-700 p-6 rounded shadow-lg">
-                        <h2 className="text-2xl font-bold">Total Balance</h2>
-                        <p className="text-3xl font-bold text-indigo-600">DKK {totalBalance.toLocaleString()}</p>
+                    <div className="bg-white text-gray-700 p-4 md:p-6 rounded shadow-lg">
+                        <h2 className="text-xl md:text-2xl font-bold">Total Balance</h2>
+                        <p className="text-2xl md:text-3xl font-bold text-indigo-600">DKK {totalBalance.toLocaleString()}</p>
                     </div>
                 </div>
 
-                <div className="flex justify-center gap-4 mb-8">
+                <div className="flex flex-wrap justify-center gap-4 mb-8">
                     <button
-                        className="btn btn-primary"
+                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 md:px-6 md:py-3 rounded shadow"
                         onClick={() => setIsModalOpen(true)}
                     >
                         Add New Game
                     </button>
                     <button
-                        className="btn btn-secondary"
-                        onClick={() => navigate("/register-player")}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 md:px-6 md:py-3 rounded shadow"
+                        onClick={() => navigate('/register-player')}
                     >
                         Add New Player
                     </button>
                     <button
-                        className="btn btn-accent"
-                        onClick={() => navigate("/admin/transactions")}
+                        className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 md:px-6 md:py-3 rounded shadow"
+                        onClick={() => navigate('/admin/transactions')}
                     >
                         View Transactions
                     </button>
                 </div>
 
-                <div className="bg-white text-gray-700 p-6 rounded shadow-lg">
-                    <h2 className="text-3xl font-bold mb-4">Recent Activities</h2>
-                    <ul className="list-disc list-inside text-lg">
+                <div className="bg-white text-gray-700 p-4 md:p-6 rounded shadow-lg">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-4">Recent Activities</h2>
+                    <ul className="list-disc list-inside text-sm md:text-lg">
                         {recentWinners.map((winner, index) => (
                             <li key={index}>
-                                {winner.playerName} won DKK {winner.winningAmount?.toLocaleString()} in Week #
-                                {winner.gameWeek}
+                                {winner.playerName} won DKK {winner.winningAmount?.toLocaleString()} in Week #{winner.gameWeek}
                             </li>
                         ))}
                     </ul>

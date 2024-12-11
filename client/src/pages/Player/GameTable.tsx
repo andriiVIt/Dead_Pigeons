@@ -98,15 +98,15 @@ const GameTable: React.FC = () => {
                         ))}
                     </select>
                 </div>
-                <div className="grid grid-cols-4 gap-8 max-w-4xl mx-auto p-4 bg-transparent rounded-lg shadow-xl">
+                <div className="grid grid-cols-4 gap-4 max-w-4xl mx-auto">
                     {Array.from({length: 16}, (_, index) => index + 1).map((number) => (
                         <button
                             key={number}
                             onClick={() => toggleNumber(number)}
-                            className={`py-16 w-full rounded-xl font-extrabold text-4xl transition-all transform duration-200 ease-in-out hover:scale-110 hover:shadow-2xl ${
+                            className={`py-12 rounded-lg font-bold text-white text-3xl transition-all ${
                                 selectedNumbers.includes(number)
-                                    ? "bg-gradient-to-tr from-orange-500 via-red-500 to-pink-500 text-white hover:from-orange-600 hover:to-pink-600"
-                                    : "bg-gradient-to-tr from-gray-200 to-gray-300 text-gray-900 hover:from-gray-300 hover:to-gray-400"
+                                    ? "bg-orange-500 hover:bg-orange-600"
+                                    : "bg-gray-300 hover:bg-gray-400"
                             }`}
                         >
                             {number}

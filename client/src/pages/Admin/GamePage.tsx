@@ -147,64 +147,70 @@ const GamePage: React.FC = () => {
         <div className="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-800 to-pink-600 relative text-white">
             <NavBarAdmin />
             <div className="container mx-auto p-4">
-                <h1 className="text-3xl font-bold text-center mb-6">Manage Games</h1>
-                <button
-                    className="bg-green-500 text-white px-4 py-2 rounded mb-4"
-                    onClick={handleCreate}
-                >
-                    Create Game
-                </button>
+                <h1 className="text-2xl lg:text-3xl font-bold text-center mb-6">Manage Games</h1>
+                <div className="text-center mb-6">
+                    <button
+                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm lg:text-base shadow"
+                        onClick={handleCreate}
+                    >
+                        Create Game
+                    </button>
+                </div>
 
-                {isLoading && <p>Loading games...</p>}
-                {error && <p className="text-red-500">{error}</p>}
-                <table className="table-auto w-full bg-white text-black rounded-lg shadow-lg">
-                    <thead className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-                    <tr>
-                        <th className="px-6 py-3 text-left">#</th>
-                        <th
-                            className="px-6 py-3 text-left cursor-pointer"
-                            onClick={() => handleSort("week")}
-                        >
-                            Game Week{" "}
-                            {sortColumn === "week" && (sortDirection === "asc" ? "↑" : "↓")}
-                        </th>
-                        <th className="px-6 py-3 text-left">Start Date</th>
-                        <th className="px-6 py-3 text-left">End Date</th>
-                        <th className="px-6 py-3 text-left">Winning Sequence</th>
-                        <th className="px-6 py-3 text-left">Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {games.map((game, index) => (
-                        <tr
-                            key={game.id}
-                            className="hover:bg-gray-100 border-b transition duration-300 ease-in-out"
-                        >
-                            <td className="px-6 py-4">{index + 1}</td>
-                            <td className="px-6 py-4">{getWeekNumber(game.startDate)}</td>
-                            <td className="px-6 py-4">{formatDate(game.startDate)}</td>
-                            <td className="px-6 py-4">{formatDate(game.endDate)}</td>
-                            <td className="px-6 py-4">
-                                {game.winningSequence?.join(", ") || "N/A"}
-                            </td>
-                            <td className="px-6 py-4 flex space-x-3">
-                                <button
-                                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow"
-                                    onClick={() => handleEdit(game)}
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow"
-                                    onClick={() => handleDelete(game.id!)}
-                                >
-                                    Delete
-                                </button>
-                            </td>
+                {isLoading && <p className="text-center text-lg">Loading games...</p>}
+                {error && <p className="text-center text-red-500">{error}</p>}
+                <div className="overflow-x-auto">
+                    <table className="table-auto w-full bg-white text-black rounded-lg shadow-lg border border-gray-200">
+                        <thead className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+                        <tr>
+                            <th className="px-4 lg:px-6 py-2 lg:py-3 text-center">#</th>
+                            <th
+                                className="px-4 lg:px-6 py-2 lg:py-3 text-left cursor-pointer"
+                                onClick={() => handleSort("week")}
+                            >
+                                Game Week{" "}
+                                {sortColumn === "week" && (sortDirection === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th className="px-4 lg:px-6 py-2 lg:py-3 text-left">Start Date</th>
+                            <th className="px-4 lg:px-6 py-2 lg:py-3 text-left">End Date</th>
+                            <th className="px-4 lg:px-6 py-2 lg:py-3 text-left">Winning Sequence</th>
+                            <th className="px-4 lg:px-6 py-2 lg:py-3 text-left">Actions</th>
                         </tr>
-                    ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {games.map((game, index) => (
+                            <tr
+                                key={game.id}
+                                className={`hover:bg-gray-100 transition duration-300 ${
+                                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                                }`}
+                            >
+                                <td className="px-4 lg:px-6 py-2 lg:py-4 text-center">{index + 1}</td>
+                                <td className="px-4 lg:px-6 py-2 lg:py-4">{getWeekNumber(game.startDate)}</td>
+                                <td className="px-4 lg:px-6 py-2 lg:py-4">{formatDate(game.startDate)}</td>
+                                <td className="px-4 lg:px-6 py-2 lg:py-4">{formatDate(game.endDate)}</td>
+                                <td className="px-4 lg:px-6 py-2 lg:py-4">
+                                    {game.winningSequence?.join(", ") || "N/A"}
+                                </td>
+                                <td className="px-4 lg:px-6 py-2 lg:py-4 flex justify-center space-x-2">
+                                    <button
+                                        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow text-sm lg:text-base"
+                                        onClick={() => handleEdit(game)}
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow text-sm lg:text-base"
+                                        onClick={() => handleDelete(game.id!)}
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <EditGameModal
                 isOpen={isModalOpen}
@@ -214,6 +220,7 @@ const GamePage: React.FC = () => {
             />
         </div>
     );
+
 };
 
 export default GamePage;

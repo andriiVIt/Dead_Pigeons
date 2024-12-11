@@ -8,7 +8,7 @@ COPY server/API/*.csproj ./server/API/
 COPY server/DataAccess/*.csproj ./server/DataAccess/
 COPY server/Service/*.csproj ./server/Service/
 COPY server/ApiIntegrationTests/*.csproj ./server/ApiIntegrationTests/
-RUN dotnet restore  
+RUN dotnet restore
 
 # Copy the rest of the files and build the project
 COPY server/API/. ./server/API/
