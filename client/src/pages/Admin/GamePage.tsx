@@ -157,44 +157,45 @@ const GamePage: React.FC = () => {
 
                 {isLoading && <p>Loading games...</p>}
                 {error && <p className="text-red-500">{error}</p>}
-                <table className="table-auto w-full bg-white text-black rounded shadow">
-                    <thead>
+                <table className="table-auto w-full bg-white text-black rounded-lg shadow-lg">
+                    <thead className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
                     <tr>
-                        <th className="px-4 py-2 border">#</th>
+                        <th className="px-6 py-3 text-left">#</th>
                         <th
-                            className="px-4 py-2 border cursor-pointer"
+                            className="px-6 py-3 text-left cursor-pointer"
                             onClick={() => handleSort("week")}
                         >
                             Game Week{" "}
                             {sortColumn === "week" && (sortDirection === "asc" ? "↑" : "↓")}
                         </th>
-                        <th className="px-4 py-2 border">Start Date</th>
-                        <th className="px-4 py-2 border">End Date</th>
-                        <th className="px-4 py-2 border">Winning Sequence</th>
-                        <th className="px-4 py-2 border">Actions</th>
+                        <th className="px-6 py-3 text-left">Start Date</th>
+                        <th className="px-6 py-3 text-left">End Date</th>
+                        <th className="px-6 py-3 text-left">Winning Sequence</th>
+                        <th className="px-6 py-3 text-left">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
                     {games.map((game, index) => (
-                        <tr key={game.id}>
-                            <td className="px-4 py-2 border">{index + 1}</td>
-                            <td className="px-4 py-2 border">
-                                {getWeekNumber(game.startDate)}
-                            </td>
-                            <td className="px-4 py-2 border">{formatDate(game.startDate)}</td>
-                            <td className="px-4 py-2 border">{formatDate(game.endDate)}</td>
-                            <td className="px-4 py-2 border">
+                        <tr
+                            key={game.id}
+                            className="hover:bg-gray-100 border-b transition duration-300 ease-in-out"
+                        >
+                            <td className="px-6 py-4">{index + 1}</td>
+                            <td className="px-6 py-4">{getWeekNumber(game.startDate)}</td>
+                            <td className="px-6 py-4">{formatDate(game.startDate)}</td>
+                            <td className="px-6 py-4">{formatDate(game.endDate)}</td>
+                            <td className="px-6 py-4">
                                 {game.winningSequence?.join(", ") || "N/A"}
                             </td>
-                            <td className="px-4 py-2 border">
+                            <td className="px-6 py-4 flex space-x-3">
                                 <button
-                                    className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
+                                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow"
                                     onClick={() => handleEdit(game)}
                                 >
                                     Edit
                                 </button>
                                 <button
-                                    className="bg-red-500 text-white px-3 py-1 rounded"
+                                    className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow"
                                     onClick={() => handleDelete(game.id!)}
                                 >
                                     Delete

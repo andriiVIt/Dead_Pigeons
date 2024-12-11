@@ -48,24 +48,31 @@ const TransactionsTable: React.FC = () => {
                 {loading ? (
                     <p className="text-center">Loading transactions...</p>
                 ) : transactions.length > 0 ? (
-                    <table className="table-auto w-full bg-white text-black rounded-lg shadow">
-                        <thead>
+                    <table className="table-auto w-full bg-white text-black rounded-lg shadow-lg border border-gray-200">
+                        <thead className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
                         <tr>
-                            <th className="px-4 py-2 border">Amount</th>
-                            <th className="px-4 py-2 border">Transaction Date</th>
-                            <th className="px-4 py-2 border">MobilePay ID</th>
+                            <th className="px-6 py-3 text-left">Amount</th>
+                            <th className="px-6 py-3 text-left">Transaction Date</th>
+                            <th className="px-6 py-3 text-left">MobilePay ID</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {transactions.map((transaction) => (
-                            <tr key={transaction.id}>
-                                <td className="px-4 py-2 border">{transaction.amount || "N/A"} DKK</td>
-                                <td className="px-4 py-2 border">
+                        {transactions.map((transaction, index) => (
+                            <tr
+                                key={transaction.id}
+                                className={`hover:bg-gray-100 transition duration-300 ${
+                                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                                }`}
+                            >
+                                <td className="px-6 py-4 border-b text-gray-900 font-medium">
+                                    {transaction.amount || "N/A"} DKK
+                                </td>
+                                <td className="px-6 py-4 border-b text-gray-600">
                                     {transaction.transactionDate
                                         ? new Date(transaction.transactionDate).toLocaleString()
                                         : "N/A"}
                                 </td>
-                                <td className="px-4 py-2 border">
+                                <td className="px-6 py-4 border-b text-gray-600">
                                     {transaction.mobilePayTransactionId || "N/A"}
                                 </td>
                             </tr>
@@ -76,7 +83,7 @@ const TransactionsTable: React.FC = () => {
                     <p className="text-center">No transactions yet.</p>
                 )}
             </div>
-            <CreateTransactionModal isOpen={isModalOpen} onClose={closeModal} />
+            <CreateTransactionModal isOpen={isModalOpen} onClose={closeModal}/>
         </div>
     );
 };

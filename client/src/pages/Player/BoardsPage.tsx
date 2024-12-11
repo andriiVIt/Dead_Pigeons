@@ -80,30 +80,34 @@ const BoardsPage: React.FC = () => {
                 {isLoading ? (
                     <p className="text-center">Loading boards...</p>
                 ) : boards.length > 0 ? (
-                    <table className="table-auto w-full bg-white text-black rounded-lg shadow">
-                        <thead>
+                    <table className="table-auto w-full bg-white text-black rounded-lg shadow-lg border border-gray-200">
+                        <thead className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white">
                         <tr>
                             <th
-                                className="px-4 py-2 border cursor-pointer"
+                                className="px-6 py-3 text-left cursor-pointer"
                                 onClick={sortByGameWeek} // Додаємо сортування при кліці
                             >
                                 Game Week {sortAscending ? "▲" : "▼"}
                             </th>
-
-                            <th className="px-4 py-2 border">Numbers</th>
-                            <th className="px-4 py-2 border">Price</th>
+                            <th className="px-6 py-3 text-left">Numbers</th>
+                            <th className="px-6 py-3 text-left">Price</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {boards.map((board) => (
-                            <tr key={board.id}>
-                                <td className="px-4 py-2 border">
+                        {boards.map((board, index) => (
+                            <tr
+                                key={board.id}
+                                className={`hover:bg-gray-100 transition duration-300 ${
+                                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                                }`}
+                            >
+                                <td className="px-6 py-4 border-b text-gray-900 font-medium">
                                     {getWeekNumber(getGameStartDate(board.gameId))}
                                 </td>
-                                <td className="px-4 py-2 border">
+                                <td className="px-6 py-4 border-b text-gray-600">
                                     {board.numbers?.length ? board.numbers.join(", ") : "N/A"}
                                 </td>
-                                <td className="px-4 py-2 border">{board.price || "N/A"} DKK</td>
+                                <td className="px-6 py-4 border-b text-gray-600">{board.price || "N/A"} DKK</td>
                             </tr>
                         ))}
                         </tbody>

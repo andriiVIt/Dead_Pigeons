@@ -100,41 +100,42 @@ const TransactionPage: React.FC = () => {
                     <p className="text-center text-lg">Loading transactions...</p>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="table-auto w-full text-left bg-white text-black rounded-lg shadow-lg border-collapse border border-gray-500">
-                            <thead>
+                        <table className="table-auto w-full text-left bg-white text-black rounded-lg shadow-lg border border-gray-200">
+                            <thead className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
                             <tr>
-                                <th className="border border-gray-500 px-4 py-2 text-left">#</th>
-                                <th className="border border-gray-500 px-4 py-2">Player Name</th>
+                                <th className="px-6 py-3">#</th>
+                                <th className="px-6 py-3">Player Name</th>
                                 <th
-                                    className="border border-gray-500 px-4 py-2 cursor-pointer"
+                                    className="px-6 py-3 cursor-pointer"
                                     onClick={() => handleSort("amount")}
                                 >
                                     Amount {sortColumn === "amount" && (sortDirection === "asc" ? "↑" : "↓")}
                                 </th>
-                                <th className="border border-gray-500 px-4 py-2">MobilePay Transaction ID</th>
+                                <th className="px-6 py-3">MobilePay Transaction ID</th>
                                 <th
-                                    className="border border-gray-500 px-4 py-2 cursor-pointer"
+                                    className="px-6 py-3 cursor-pointer"
                                     onClick={() => handleSort("transactionDate")}
                                 >
                                     Transaction Date{" "}
                                     {sortColumn === "transactionDate" && (sortDirection === "asc" ? "↑" : "↓")}
                                 </th>
-                                <th className="border border-gray-500 px-4 py-2">Actions</th>
+                                <th className="px-6 py-3">Actions</th>
                             </tr>
                             </thead>
                             <tbody>
                             {transactions.map((transaction, index) => (
-                                <tr key={transaction.id}>
-                                    <td className="border border-gray-500 px-4 py-2 text-left">{index + 1}</td>
-                                    <td className="border border-gray-500 px-4 py-2">
-                                        {transaction.playerName || "Unknown"}
-                                    </td>
-                                    <td className="border border-gray-500 px-4 py-2">
+                                <tr
+                                    key={transaction.id}
+                                    className="hover:bg-gray-100 border-b border-gray-300 transition duration-300"
+                                >
+                                    <td className="px-6 py-4 text-center">{index + 1}</td>
+                                    <td className="px-6 py-4">{transaction.playerName || "Unknown"}</td>
+                                    <td className="px-6 py-4">
                                         {editTransactionId === transaction.id ? (
                                             <div className="flex items-center">
                                                 <input
                                                     type="number"
-                                                    className="text-black px-2 py-1 rounded w-full"
+                                                    className="border border-gray-300 rounded px-3 py-1 text-black"
                                                     value={editAmount ?? transaction.amount}
                                                     onChange={(e) => setEditAmount(Number(e.target.value))}
                                                 />
@@ -144,25 +145,31 @@ const TransactionPage: React.FC = () => {
                                             `${transaction.amount} DKK`
                                         )}
                                     </td>
-                                    <td className="border border-gray-500 px-4 py-2">
+                                    <td className="px-6 py-4">
                                         {transaction.mobilePayTransactionId || "N/A"}
                                     </td>
-                                    <td className="border border-gray-500 px-4 py-2">
+                                    <td className="px-6 py-4">
                                         {transaction.transactionDate
-                                            ? new Date(transaction.transactionDate).toLocaleString()
+                                            ? new Date(transaction.transactionDate).toLocaleDateString("en-GB", {
+                                                day: "2-digit",
+                                                month: "2-digit",
+                                                year: "numeric",
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                            })
                                             : "N/A"}
                                     </td>
-                                    <td className="border border-gray-500 px-4 py-2">
+                                    <td className="px-6 py-4 flex space-x-2">
                                         {editTransactionId === transaction.id ? (
                                             <button
-                                                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded mr-2"
+                                                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded shadow"
                                                 onClick={handleEdit}
                                             >
                                                 Save
                                             </button>
                                         ) : (
                                             <button
-                                                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded mr-2"
+                                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow"
                                                 onClick={() => {
                                                     setEditTransactionId(transaction.id!);
                                                     setEditAmount(transaction.amount!);
@@ -172,7 +179,7 @@ const TransactionPage: React.FC = () => {
                                             </button>
                                         )}
                                         <button
-                                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                                            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded shadow"
                                             onClick={() => handleDelete(transaction.id!)}
                                         >
                                             Delete

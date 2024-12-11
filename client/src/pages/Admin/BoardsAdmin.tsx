@@ -99,40 +99,45 @@ const BoardsAdmin: React.FC = () => {
                 {isLoading ? (
                     <p className="text-center">Loading...</p>
                 ) : sortedBoards.length > 0 ? (
-                    <table className="table-auto w-full bg-white shadow rounded text-black">
-                        <thead>
+                    <table className="table-auto w-full bg-white shadow-lg rounded-lg text-black">
+                        <thead className="bg-gradient-to-r from-green-600 to-blue-600 text-white">
                         <tr>
-                            <th className="px-4 py-2 border">#</th>
+                            <th className="px-6 py-3 text-left">#</th>
                             <th
-                                className="px-4 py-2 border cursor-pointer"
+                                className="px-6 py-3 text-left cursor-pointer"
                                 onClick={() => handleSort("playerName")}
                             >
-                                Player Name {sortColumn === "playerName" && (sortDirection === "asc" ? "↑" : "↓")}
+                                Player Name{" "}
+                                {sortColumn === "playerName" && (sortDirection === "asc" ? "↑" : "↓")}
                             </th>
                             <th
-                                className="px-4 py-2 border cursor-pointer"
+                                className="px-6 py-3 text-left cursor-pointer"
                                 onClick={() => handleSort("gameWeek")}
                             >
-                                Game Week {sortColumn === "gameWeek" && (sortDirection === "asc" ? "↑" : "↓")}
+                                Game Week{" "}
+                                {sortColumn === "gameWeek" && (sortDirection === "asc" ? "↑" : "↓")}
                             </th>
-                            <th className="px-4 py-2 border">Numbers</th>
-                            <th className="px-4 py-2 border">Price</th>
+                            <th className="px-6 py-3 text-left">Numbers</th>
+                            <th className="px-6 py-3 text-left">Price</th>
                         </tr>
                         </thead>
                         <tbody>
                         {sortedBoards.map((board, index) => (
-                            <tr key={board.id}>
-                                <td className="px-4 py-2 border text-center">{index + 1}</td>
-                                <td className="px-4 py-2 border">{getPlayerName(board.playerId || "")}</td>
-                                <td className="px-4 py-2 border">
+                            <tr
+                                key={board.id}
+                                className="hover:bg-gray-100 border-b transition duration-300 ease-in-out"
+                            >
+                                <td className="px-6 py-4 text-center">{index + 1}</td>
+                                <td className="px-6 py-4">{getPlayerName(board.playerId || "")}</td>
+                                <td className="px-6 py-4">
                                     {getGameWeek(board.gameId || "") !== null
                                         ? `Week ${getGameWeek(board.gameId || "")}`
                                         : "Unknown Week"}
                                 </td>
-                                <td className="px-4 py-2 border">
+                                <td className="px-6 py-4">
                                     {board.numbers?.length ? board.numbers.join(", ") : "N/A"}
                                 </td>
-                                <td className="px-4 py-2 border">{board.price || "N/A"} DKK</td>
+                                <td className="px-6 py-4">{board.price || "N/A"} DKK</td>
                             </tr>
                         ))}
                         </tbody>

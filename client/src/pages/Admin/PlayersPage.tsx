@@ -91,32 +91,43 @@ const PlayersPage: React.FC = () => {
                 </div>
                 {isLoading && <p>Loading players...</p>}
                 {error && <p className="text-red-500">{error}</p>}
-                <table className="table-auto w-full bg-white text-black rounded shadow">
-                    <thead>
+                <table className="table-auto w-full bg-white text-black rounded-lg shadow-lg border border-gray-200">
+                    <thead className="bg-gradient-to-r from-green-500 to-blue-500 text-white">
                     <tr>
-                        <th className="px-4 py-2 border">Name</th>
-                        <th className="px-4 py-2 border">Balance</th>
-                        <th className="px-4 py-2 border">Status</th>
-                        <th className="px-4 py-2 border">Actions</th>
+                        <th className="px-6 py-3">Name</th>
+                        <th className="px-6 py-3">Balance</th>
+                        <th className="px-6 py-3">Status</th>
+                        <th className="px-6 py-3">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {players.map((player) => (
-                        <tr key={player.id}>
-                            <td className="px-4 py-2 border">{player.name}</td>
-                            <td className="px-4 py-2 border">{player.balance} DKK</td>
-                            <td className="px-4 py-2 border">
-                                {player.isActive ? "Active" : "Inactive"}
+                    {players.map((player, index) => (
+                        <tr
+                            key={player.id}
+                            className={`hover:bg-gray-100 transition duration-300 ${
+                                player.isActive ? "bg-green-50" : "bg-red-50"
+                            }`}
+                        >
+                            <td className="px-6 py-4 border-b text-gray-900">{player.name}</td>
+                            <td className="px-6 py-4 border-b text-gray-900">{player.balance} DKK</td>
+                            <td className="px-6 py-4 border-b">
+                    <span
+                        className={`px-3 py-1 rounded-full text-white ${
+                            player.isActive ? "bg-green-500" : "bg-red-500"
+                        }`}
+                    >
+                        {player.isActive ? "Active" : "Inactive"}
+                    </span>
                             </td>
-                            <td className="px-4 py-2 border">
+                            <td className="px-6 py-4 border-b flex space-x-2">
                                 <button
-                                    className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
+                                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow"
                                     onClick={() => handleEdit(player)}
                                 >
                                     Edit
                                 </button>
                                 <button
-                                    className="bg-red-500 text-white px-3 py-1 rounded"
+                                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded shadow"
                                     onClick={() => handleDelete(player.id!)}
                                 >
                                     Delete
