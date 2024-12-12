@@ -24,8 +24,10 @@ const PlayerBalance: React.FC = () => {
 
     return (
         <div
-            className="absolute left-4 bg-green-500 text-white px-10 py-6 rounded shadow text-xl"
-            style={{top: "112px"}} // Висота двох кнопок: 2 * 48px = 96px + 16px (відступ)
+            className="relative bg-green-500 text-white px-6 py-4 rounded shadow text-lg md:text-xl mx-auto max-w-xs sm:max-w-sm lg:max-w-md"
+            style={{
+                marginTop: "1rem", // Відступ від тексту "Select a Game"
+            }}
         >
             {balance !== null ? (
                 <span>Balance: {balance} DKK</span>

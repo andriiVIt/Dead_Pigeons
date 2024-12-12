@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import NavBarPlayer from "/src/components/playerComponents/NavBarPlayer.tsx";
+ 
 import { http } from "/src/http";
 import { useAtom } from "jotai";
 import { playerIdAtom } from "/src/atoms/transactionAtoms.ts";
@@ -77,7 +77,7 @@ const GameTable: React.FC = () => {
     }
     return (
         <div className="pt-10">
-            <PlayerBalance key={balanceUpdated ? 1 : 0} />
+
             <div>
                 <h2 className="text-3xl font-bold text-white mb-6 text-center">Select your Numbers</h2>
 
@@ -98,7 +98,7 @@ const GameTable: React.FC = () => {
                         ))}
                     </select>
                 </div>
-                <div className="grid grid-cols-4 gap-4 max-w-4xl mx-auto">
+                <div className="grid grid-cols-4 gap-3 max-w-2xl mx-auto">
                     {Array.from({length: 16}, (_, index) => index + 1).map((number) => (
                         <button
                             key={number}
@@ -117,10 +117,12 @@ const GameTable: React.FC = () => {
                     <p className="text-4xl font-bold text-white">Price: {calculatePrice()}</p>
                     <button
                         onClick={handleSubmit}
-                        className="mt-4 px-6 py-6 text-3xl bg-purple-500 hover:bg-purple-800 text-white font-bold rounded-lg shadow-md transition-all"
+                        className="mt-2 px-2 py-2 text-3xl bg-purple-500 hover:bg-purple-800 text-white font-bold rounded-lg shadow-md transition-all"
                     >
                         Confirm
                     </button>
+                    <PlayerBalance key={balanceUpdated ? 1 : 0} />
+
                 </div>
             </div>
         </div>
