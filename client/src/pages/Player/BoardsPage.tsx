@@ -91,7 +91,7 @@ const BoardsPage: React.FC = () => {
                                 >
                                     Game Week {sortAscending ? "▲" : "▼"}
                                 </th>
-                                <th className="px-6 py-3 text-left hidden md:table-cell">Numbers</th>
+                                <th className="px-6 py-3 text-left ">Numbers</th>
                                 <th className="px-6 py-3 text-left">Price</th>
                             </tr>
                             </thead>
@@ -106,7 +106,7 @@ const BoardsPage: React.FC = () => {
                                     <td className="px-6 py-4 border-b text-gray-900 font-medium">
                                         {getWeekNumber(getGameStartDate(board.gameId))}
                                     </td>
-                                    <td className="px-6 py-4 border-b text-gray-600 hidden md:table-cell">
+                                    <td className="px-6 py-4 border-b text-gray-600 ">
                                         {board.numbers?.length ? board.numbers.join(", ") : "N/A"}
                                     </td>
                                     <td className="px-6 py-4 border-b text-gray-600">

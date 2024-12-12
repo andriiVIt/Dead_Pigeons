@@ -55,9 +55,7 @@ const TransactionsTable: React.FC = () => {
                             <tr>
                                 <th className="px-6 py-3 text-left">Amount</th>
                                 <th className="px-6 py-3 text-left">Transaction Date</th>
-                                <th className="px-6 py-3 text-left hidden sm:table-cell">
-                                    MobilePay ID
-                                </th>
+                                <th className="px-6 py-3 text-left ">MobilePay ID</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -82,7 +80,7 @@ const TransactionsTable: React.FC = () => {
                                             })
                                             : "N/A"}
                                     </td>
-                                    <td className="px-6 py-4 border-b text-gray-600 hidden sm:table-cell">
+                                    <td className="px-6 py-4 border-b text-gray-600 ">
                                         {transaction.mobilePayTransactionId || "N/A"}
                                     </td>
                                 </tr>
