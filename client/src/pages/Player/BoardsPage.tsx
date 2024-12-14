@@ -12,7 +12,7 @@ const BoardsPage: React.FC = () => {
     const [token] = useAtom(jwtAtom);
     const [games, setGames] = useState<GetGameDto[]>([]);
     const [sortAscending, setSortAscending] = useState<boolean>(true);
-    // Завантаження списку ігор
+    // Loading a list of games
     useEffect(() => {
         const fetchGames = async () => {
             try {
@@ -41,13 +41,13 @@ const BoardsPage: React.FC = () => {
         loadBoards();
     }, [setBoards, setLoading, token]);
 
-    // Отримання стартової дати гри за gameId
+    // Get the start date of the game by gameId
     const getGameStartDate = (gameId: string | undefined): string | undefined | null => {
         const game = games.find((g) => g.id === gameId);
         return game ? game.startDate : null;
     };
 
-    // Функція для обчислення тижня за датою
+    // Function to calculate the week by date
     const getWeekNumber = (dateString: string | undefined | null): string => {
         if (!dateString) return "Unknown Week";
         const date = new Date(dateString);
@@ -69,7 +69,7 @@ const BoardsPage: React.FC = () => {
         });
 
         setBoards(sortedBoards);
-        setSortAscending(!sortAscending); // Змінюємо напрямок сортування
+        setSortAscending(!sortAscending); // Change the sorting direction
     };
 
     return (
@@ -87,7 +87,7 @@ const BoardsPage: React.FC = () => {
                             <tr>
                                 <th
                                     className="px-6 py-3 text-left cursor-pointer"
-                                    onClick={sortByGameWeek} // Додаємо сортування при кліці
+                                    onClick={sortByGameWeek} // Add sorting on click
                                 >
                                     Game Week {sortAscending ? "▲" : "▼"}
                                 </th>

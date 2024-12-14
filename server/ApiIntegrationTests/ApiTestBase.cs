@@ -30,7 +30,7 @@ public class ApiTestBase : WebApplicationFactory<Program>
         }
 
         Seed().Wait();
-        // Якщо потрібно, можна додати авторизацію
+        // You can add authorization if needed
          Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUwMDAiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUwMDAiLCJleHAiOjE3MzQyOTgyODQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJhZG1pbkBleGFtcGxlLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiZWYxZmY2ZTMtNzU0OC00NjMwLWE0NGItNjFhM2NlYTZlZWY2IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW4iLCJjdXJyZW50RGF0ZSI6IjIwMjQtMTItMDgiLCJpYXQiOjE3MzM2OTM0ODQsIm5iZiI6MTczMzY5MzQ4NH0.g4S0eGTWsDYbNHwgcczUbTKBNpTJMbuV8x61jHTVX1bttVsHsfCRwb_PWIGgqgCaeThgvw207RNS0b65GPKt1A");
 
         Seed().Wait();
@@ -52,7 +52,7 @@ public class ApiTestBase : WebApplicationFactory<Program>
         {
             await roleManager.CreateAsync(new IdentityRole(Role.Player));
         }
-        // Додайте тестового адміністратора
+        // Add a test admin
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
         var adminUser = new User { UserName = "admin@test.com", Email = "admin@test.com" };
 
@@ -64,7 +64,7 @@ public class ApiTestBase : WebApplicationFactory<Program>
                 await userManager.AddToRoleAsync(adminUser, Role.Admin);
             }
         }
-        // Створимо тестову гру
+        // Let's create a test game
         var game = new Game
         {
             Id = Guid.NewGuid(),
@@ -84,12 +84,12 @@ public class ApiTestBase : WebApplicationFactory<Program>
         });
         builder.ConfigureServices(services =>
         {
-            // Видаляємо оригінальний DbContext
+            // Delete the original DbContext
             var descriptor = services.SingleOrDefault(
                 d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
             if (descriptor != null) services.Remove(descriptor);
 
-            // Підключаємо Postgres з використанням PgCtxSetup
+            // Connect Postgres using PgCtxSetup
             services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseNpgsql(PgCtxSetup._postgres.GetConnectionString());

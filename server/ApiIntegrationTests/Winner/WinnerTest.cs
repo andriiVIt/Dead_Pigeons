@@ -21,14 +21,14 @@ public async Task GetWinnersByGame_ShouldReturnWinners()
     var gameId = Guid.NewGuid();
     var playerId = Guid.NewGuid();
     var winnerId = Guid.NewGuid();
-    var userId = Guid.NewGuid().ToString(); // Унікальний UserId
+    var userId = Guid.NewGuid().ToString(); // Unique UserId
 
     using (var scope = ApplicationServices.CreateScope())
     {
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 
-        // Створення користувача
+        // Create user
         var user = new User
         {
             Id = userId,
@@ -40,10 +40,10 @@ public async Task GetWinnersByGame_ShouldReturnWinners()
         var createUserResult = await userManager.CreateAsync(user, "Test123!");
         if (!createUserResult.Succeeded)
         {
-            throw new Exception("Не вдалося створити користувача для тесту.");
+            throw new Exception("Failed to create test user.");
         }
 
-        // Створення гри
+        // Create the game
         var game = new Game
         {
             Id = gameId,
@@ -51,17 +51,17 @@ public async Task GetWinnersByGame_ShouldReturnWinners()
             WinningSequence = new List<int> { 1, 2, 3 }
         };
 
-        // Створення гравця
+        // Create the player
         var player = new Player
         {
             Id = playerId,
-            UserId = userId, // Зв'язок із створеним користувачем
+            UserId = userId, // Communication with the created user
             Name = "Test Player",
             Balance = 100,
             IsActive = true
         };
 
-        // Створення переможця
+        // Create the winner
         var winner = new Winner
         {
             Id = winnerId,
@@ -70,7 +70,7 @@ public async Task GetWinnersByGame_ShouldReturnWinners()
             WinningAmount = 500
         };
 
-        // Додавання в базу
+        // Adding to the database
         dbContext.Games.Add(game);
         dbContext.Players.Add(player);
         dbContext.Winners.Add(winner);
@@ -97,17 +97,17 @@ public async Task GetWinnerById_ShouldReturnWinnerDetails()
     var winnerId = Guid.NewGuid();
     var playerId = Guid.NewGuid();
     var gameId = Guid.NewGuid();
-    var userId = Guid.NewGuid().ToString(); // Унікальний ID для користувача
+    var userId = Guid.NewGuid().ToString(); // Unique ID for the user
 
     using (var scope = ApplicationServices.CreateScope())
     {
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 
-        // Створення користувача
+        // Create user
         var user = new User
         {
-            Id = userId, // Встановлюємо ID, який співпадатиме з UserId у Player
+            Id = userId, // Set the ID that will match the UserId in the Player
             UserName = "testplayer@example.com",
             Email = "testplayer@example.com",
             EmailConfirmed = true
@@ -115,10 +115,10 @@ public async Task GetWinnerById_ShouldReturnWinnerDetails()
         var createUserResult = await userManager.CreateAsync(user, "Test123!");
         if (!createUserResult.Succeeded)
         {
-            throw new Exception("Не вдалося створити користувача для тесту.");
+            throw new Exception("Failed to create test user.");
         }
 
-        // Створення гри
+         
         var game = new Game
         {
             Id = gameId,
@@ -126,17 +126,17 @@ public async Task GetWinnerById_ShouldReturnWinnerDetails()
             WinningSequence = new List<int> { 1, 2, 3 }
         };
 
-        // Створення гравця
+         
         var player = new Player
         {
             Id = playerId,
-            UserId = userId, // Використовуємо існуючий UserId
+            UserId = userId,  
             Name = "Test Player",
             Balance = 100,
             IsActive = true
         };
 
-        // Створення переможця
+        // Create the winner
         var winner = new Winner
         {
             Id = winnerId,
@@ -145,7 +145,7 @@ public async Task GetWinnerById_ShouldReturnWinnerDetails()
             WinningAmount = 500
         };
 
-        // Додавання даних у базу
+        // Adding data to the database
         dbContext.Games.Add(game);
         dbContext.Players.Add(player);
         dbContext.Winners.Add(winner);
@@ -174,7 +174,7 @@ public async Task CheckForWinner_ShouldReturnWinnerResponse()
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 
-        // Спочатку створюємо користувача
+        // First we create a user
         var user = new User
         {
             Id = Guid.NewGuid().ToString(),
@@ -184,7 +184,7 @@ public async Task CheckForWinner_ShouldReturnWinnerResponse()
         };
         await userManager.CreateAsync(user, "Test123!");
 
-        // Створюємо гравця, прив'язаного до користувача
+        // Create a player bound to the user
         var player = new Player
         {
             Id = playerId,
@@ -194,7 +194,7 @@ public async Task CheckForWinner_ShouldReturnWinnerResponse()
             IsActive = true
         };
 
-        // Створюємо гру з дошками
+        // Create a board game
         var game = new Game
         {
             Id = gameId,

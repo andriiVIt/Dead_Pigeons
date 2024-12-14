@@ -35,29 +35,29 @@ export default function Register() {
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
         setError(null);
         try {
-            const createPromise = http.authRegisterCreate(data); // Виконуємо запит для створення гравця
+            const createPromise = http.authRegisterCreate(data);  
             toast.promise(createPromise, {
                 loading: "Creating new player...",
                 success: "Player created successfully! Verification email sent.",
                 error: "Failed to create player. Please try again.",
             });
 
-            await createPromise; // Чекаємо завершення запиту
+            await createPromise;  
 
-            // Якщо успішно, перенаправляємо на сторінку /admin/players
+             
             navigate("/admin/players");
         } catch (e: any) {
-            setError(e.message); // У разі помилки встановлюємо текст помилки
+            setError(e.message);  
         }
     };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-800 to-pink-600 relative text-white">
-            {/* Навбар */}
+             
             <NavBarAdmin/>
 
 
-            {/* Контейнер для форми */}
+             
             <div className="min-h-screen flex justify-center items-center  ">
                 <div className="w-full max-w-3xl shadow-2xl bg-base-100 p-10 rounded-lg">
                     <h1 className="text-2xl font-bold text-center mb-6 text-black">
@@ -68,7 +68,7 @@ export default function Register() {
                         method="post"
                         onSubmit={handleSubmit(onSubmit)}
                     >
-                        {/* Поле Name */}
+                        {/* Name field */}
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text text-black">Name</span>
@@ -84,7 +84,7 @@ export default function Register() {
                             <small className="text-error">{errors.name?.message}</small>
                         </div>
 
-                        {/* Поле Email */}
+                        {/* Email field */}
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text text-black">Email</span>
@@ -100,7 +100,7 @@ export default function Register() {
                             <small className="text-error">{errors.email?.message}</small>
                         </div>
 
-                        {/* Поле Password */}
+                        {/* Password field */}
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text text-black">Password</span>
@@ -116,7 +116,7 @@ export default function Register() {
                             <small className="text-error">{errors.password?.message}</small>
                         </div>
 
-                        {/* Поле Repeat Password */}
+                        {/* Repeat Password field */}
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text text-black">Repeat password</span>
@@ -134,7 +134,7 @@ export default function Register() {
                             </small>
                         </div>
 
-                        {/* Кнопка Create */}
+                        {/* Create button */}
                         <div className="form-control mt-6">
                             <button className="btn btn-primary w-full">Create</button>
                         </div>

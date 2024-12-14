@@ -94,7 +94,7 @@ public class WinnerService : IWinnerService
             .Where(b => b.GameId == gameId)
             .Sum(b => b.Price);
 
-        decimal prizePool = totalRevenue * 0.7m; // 70% йде на призовий фонд
+        decimal prizePool = totalRevenue * 0.7m; // 70% goes to the prize fund
         return prizePool;
     }
     private void AddPrizeToPlayerBalance(Guid playerId, decimal prize)

@@ -11,7 +11,7 @@ import CreateTransactionModal from "/src/components/playerComponents/CreateTrans
 const TransactionsTable: React.FC = () => {
     const [transactions, setTransactions] = useAtom(transactionsAtom);
     const [loading, setLoading] = useAtom(transactionsLoadingAtom);
-    const [token] = useAtom(jwtAtom); // Отримуємо токен із локального сховища
+    const [token] = useAtom(jwtAtom);  
     const [isModalOpen, setIsModalOpen] = useState(false);
 
 

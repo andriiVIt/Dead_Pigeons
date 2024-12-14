@@ -30,7 +30,7 @@ const TransactionPage: React.FC = () => {
         fetchTransactions();
     }, [setTransactions, setLoading]);
 
-    // Функція видалення транзакції
+    // Function to delete a transaction
     const handleDelete = async (transactionId: string) => {
         try {
             await http.transactionDelete(transactionId);
@@ -40,7 +40,7 @@ const TransactionPage: React.FC = () => {
         }
     };
 
-    // Функція оновлення транзакції
+    // Transaction update function
     const handleEdit = async () => {
         if (!editTransactionId || editAmount === null) return;
 
@@ -56,7 +56,7 @@ const TransactionPage: React.FC = () => {
                         : transaction
                 )
             );
-            setEditTransactionId(null); // Закрити режим редагування
+            setEditTransactionId(null); // Close edit mode
         } catch (error) {
             console.error("Error updating transaction:", error);
         }

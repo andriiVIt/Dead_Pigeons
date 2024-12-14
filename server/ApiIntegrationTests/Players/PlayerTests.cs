@@ -47,7 +47,7 @@ public class PlayerTests : ApiTestBase
             var testPlayer = new Player
             {
                 Id = playerId,
-                UserId = user.Id, // Використовуємо коректний UserId
+                UserId = user.Id, // We use the correct UserId
                 Name = "Player to Update",
                 Balance = 50.00m,
                 IsActive = true
@@ -62,7 +62,7 @@ public class PlayerTests : ApiTestBase
         var response = await Client.PutAsJsonAsync($"/api/player/{playerId}", updateDto);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK); // Очікуємо 200
+        response.StatusCode.Should().Be(HttpStatusCode.OK); // Expect 200
         var updatedPlayer = await response.Content.ReadFromJsonAsync<GetPlayerDto>();
         updatedPlayer.Name.Should().Be(updateDto.Name);
         updatedPlayer.Balance.Should().Be(updateDto.Balance);
@@ -72,7 +72,7 @@ public class PlayerTests : ApiTestBase
     [Fact]
     public async Task DeletePlayer_ShouldReturnNoContent()
     {
-        // Arrange: створюємо тестового користувача
+        // Arrange: create a test user
         var userManager = ApplicationServices.GetRequiredService<UserManager<User>>();
         var user = new User
         {
@@ -83,10 +83,10 @@ public class PlayerTests : ApiTestBase
 
         await userManager.CreateAsync(user, "Test123!");
 
-        // Створення тестового гравця
+        // Create test player
         var player = new Player
         {
-            UserId = user.Id, // Використовуємо ідентифікатор створеного користувача
+            UserId = user.Id, // We use the ID of the created user
             Name = "Player to Delete",
             Balance = 50.00m,
             IsActive = true
@@ -99,13 +99,13 @@ public class PlayerTests : ApiTestBase
             await dbContext.SaveChangesAsync();
         }
 
-        // Додаємо авторизаційний токен
+        // Add the authorization token
         Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
 
-        // Act: видаляємо гравця
+        // Act: remove the player
         var response = await Client.DeleteAsync($"/api/player/{player.Id}");
 
-        // Assert: перевіряємо, що статус відповіді 204 NoContent
+        // Assert: we check that the response status is 204 NoContent
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         using (var scope = ApplicationServices.CreateScope())
@@ -135,7 +135,7 @@ public class PlayerTests : ApiTestBase
     [Fact]
     public async Task DeletePlayer_ShouldReturnUnauthorized_WhenNotAuthorized()
     {
-        // Arrange: створюємо тестового користувача і гравця
+        // Arrange: create a test user and player
         var userManager = ApplicationServices.GetRequiredService<UserManager<User>>();
         var user = new User
         {
@@ -161,11 +161,11 @@ public class PlayerTests : ApiTestBase
             await dbContext.SaveChangesAsync();
         }
 
-        // Act: робимо запит без токена авторизації
-        Client.DefaultRequestHeaders.Authorization = null; // Важливо видалити токен
+        // Act: we make a request without an authorization token
+        Client.DefaultRequestHeaders.Authorization = null; // It is important to remove the token
         var response = await Client.DeleteAsync($"/api/player/{player.Id}");
 
-        // Assert: перевіряємо, що повертається 401 Unauthorized
+        // Assert: check that 401 Unauthorized is returned
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 

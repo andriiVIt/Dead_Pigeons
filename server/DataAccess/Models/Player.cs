@@ -12,7 +12,7 @@ public class Player
 
     public User User { get; set; }
 
-    // Додати цю властивість
+     
     public List<Board> Boards { get; set; } = new();
     public List<Transaction> Transactions { get; set; } = new();
     

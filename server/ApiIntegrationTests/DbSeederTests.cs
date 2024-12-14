@@ -24,11 +24,11 @@ public class DbSeederTests : ApiTestBase
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 
-            // Перевірка ролей
+            // Checking roles
             (await roleManager.RoleExistsAsync(Role.Admin)).Should().BeTrue();
             (await roleManager.RoleExistsAsync(Role.Player)).Should().BeTrue();
 
-            // Перевірка користувачів
+            // Validate users
             var admin = await userManager.FindByNameAsync("admin@example.com");
             admin.Should().NotBeNull();
             (await userManager.IsInRoleAsync(admin, Role.Admin)).Should().BeTrue();

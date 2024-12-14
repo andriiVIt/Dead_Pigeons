@@ -108,7 +108,7 @@ const GamePage: React.FC = () => {
     const formatDate = (dateString: string | null | undefined) => {
         if (!dateString) return "N/A";
         const date = new Date(dateString);
-        return date.toLocaleDateString("en-GB"); // формат dd/MM/yyyy
+        return date.toLocaleDateString("en-GB"); // format dd/MM/yyyy
     };
 
     const handleSort = (column: string) => {

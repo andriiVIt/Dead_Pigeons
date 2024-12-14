@@ -66,7 +66,7 @@ public class PlayerService : IPlayerService
     public List<GetPlayerDto> GetAllPlayers(int limit, int startAt)
     {
         var players = _context.Players
-            .Include(p => p.User) // Включаємо дані користувача
+            .Include(p => p.User) // Include user data
             .OrderBy(p => p.Id)
             .Skip(startAt)
             .Take(limit)
@@ -83,28 +83,28 @@ public class PlayerService : IPlayerService
 
     public bool DeletePlayer(Guid id)
     {
-        // Знаходимо гравця за ID
+        // Find the player by ID
         var player = _context.Players.FirstOrDefault(p => p.Id == id);
         if (player == null)
         {
-            return false; // Якщо гравця не знайдено
+            return false; // If no player found
         }
 
-        // Отримуємо UserId гравця
+        // We get the UserId of the player
         var userId = player.UserId;
 
-        // Видаляємо гравця
+        // Delete the player
         _context.Players.Remove(player);
 
-        // Знаходимо і видаляємо відповідного користувача з AspNetUsers
+        // Find and delete the corresponding user from AspNetUsers
         var user = _context.Users.FirstOrDefault(u => u.Id == userId);
         if (user != null)
         {
             _context.Users.Remove(user);
         }
 
-        // Зберігаємо зміни
+        // Save the changes
         _context.SaveChanges();
-        return true; // Успішно видалено
+        return true; // Deleted successfully
     }
 }

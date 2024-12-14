@@ -50,14 +50,14 @@ public class AuthController : ControllerBase
         [FromServices] UserManager<User> userManager,
         [FromServices] IEmailSender<User> emailSender,
         [FromServices] IValidator<RegisterRequest> validator,
-        [FromServices] AppDbContext dbContext, // Додано контекст бази даних
+        [FromServices] AppDbContext dbContext, // Added database context
         [FromBody] RegisterRequest data
     )
     {
-        // Валідація вхідних даних
+        // Validation of input data
         await validator.ValidateAndThrowAsync(data);
 
-        // Створення користувача
+        // Create user
         var user = new User { UserName = data.Email, Email = data.Email };
         var result = await userManager.CreateAsync(user, data.Password);
         if (!result.Succeeded)
@@ -67,10 +67,10 @@ public class AuthController : ControllerBase
             );
         }
 
-        // Додавання ролі для користувача
+        // Add a role for the user
         await userManager.AddToRoleAsync(user, Role.Player);
 
-        // Генерація токена підтвердження email
+        // Generation of email confirmation token
         var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
         var qs = new Dictionary<string, string?> { { "token", token }, { "email", user.Email } };
@@ -80,19 +80,19 @@ public class AuthController : ControllerBase
             Query = QueryString.Create(qs).Value
         }.Uri.ToString();
 
-        // Надсилання листа з підтвердженням
+        // Sending a confirmation email
         await emailSender.SendConfirmationLinkAsync(user, user.Email, confirmationLink);
 
-        // Додавання запису в таблицю Players
+        // Adding an entry to the Players table
         var player = new Player
         {
             UserId = user.Id,
-            Name = data.Name ?? user.UserName, // Ім'я можна взяти з даних або email
-            Balance = 0, // Початковий баланс гравця
-            IsActive = true // За замовчуванням гравець активний
+            Name = data.Name ?? user.UserName, // The name can be taken from data or email
+            Balance = 0,// Player's starting balance
+            IsActive = true // By default, the player is active
         };
         dbContext.Players.Add(player);
-        await dbContext.SaveChangesAsync(); // Збереження змін у базі даних
+        await dbContext.SaveChangesAsync(); // Save changes to the database
 
         return new RegisterResponse(Email: user.Email, Name: user.UserName);
     }
@@ -115,7 +115,7 @@ public class AuthController : ControllerBase
         var user = await userManager.FindByNameAsync(username) ?? throw new AuthenticationError();
         var roles = await userManager.GetRolesAsync(user);
 
-        // Перевірка ролей
+        // Checking roles
         var isAdmin = roles.Contains(Role.Admin);
         var isPlayer = roles.Contains(Role.Player);
 

@@ -131,10 +131,10 @@ const AdminDashboard: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-800 to-pink-600 relative text-white">
-            {/* Навбар */}
+             
             <NavBarAdmin />
 
-            {/* Контент */}
+             
             <div className="container mx-auto px-4 py-6 relative z-10 mt-36">
                 <div className="text-white text-center mb-8">
 

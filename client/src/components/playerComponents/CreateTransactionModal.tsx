@@ -10,9 +10,9 @@ interface CreateTransactionModalProps {
 }
 
 const CreateTransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClose }) => {
-    const [transactions, setTransactions] = useAtom(transactionsAtom); // Оновлення транзакцій
-    const [playerId] = useAtom(playerIdAtom); // Отримуємо playerId із атому
-    const [token] = useAtom(jwtAtom); // Отримуємо токен із атому
+    const [transactions, setTransactions] = useAtom(transactionsAtom); // Update transactions
+    const [playerId] = useAtom(playerIdAtom); // Get the playerId from the atom
+    const [token] = useAtom(jwtAtom); // We get a token from an atom
     const [formData, setFormData] = useState({
         amount: "",
         mobilePayTransactionId: "",
@@ -32,7 +32,7 @@ const CreateTransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen,
         }
 
         try {
-            // Відправка запиту на створення транзакції
+            // Sending a request to create a transaction
             const response = await http.transactionCreate({
                 playerId: playerId,
                 amount: parseFloat(formData.amount),
@@ -41,15 +41,15 @@ const CreateTransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen,
 
             console.log("Transaction created:", response.data);
 
-            // Оновлюємо список транзакцій
+            // Update the list of transactions
             if (token) {
                 await fetchTransactions(setTransactions, token);
             }
 
-            // Очищаємо форму
+            // Clear the form
             setFormData({ amount: "", mobilePayTransactionId: "" });
 
-            // Закриваємо модальне вікно
+            // Close the modal window
             onClose();
         } catch (error) {
             console.error("Error creating transaction:", error);

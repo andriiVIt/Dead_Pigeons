@@ -17,7 +17,7 @@ public class WinnerController : ControllerBase
         _winnerService = winnerService;
     }
 
-    // Отримання списку переможців для конкретної гри
+    // Get the list of winners for a specific game
     [HttpGet]
     [Route("game/{gameId:guid}")]
     public ActionResult<List<GetWinnerDto>> GetWinnersByGame(Guid gameId)
@@ -32,7 +32,7 @@ public class WinnerController : ControllerBase
         var result = _winnerService.CheckForWinner(gameId, playerId);
         return Ok(result);
     }
-    // Отримання детальної інформації про конкретного переможця
+    // Get detailed information about a specific winner
     [HttpGet]
     
     [Route("{winnerId:guid}")]

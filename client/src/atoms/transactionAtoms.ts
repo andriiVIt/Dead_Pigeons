@@ -4,13 +4,13 @@ import { GetTransactionDto } from "../Api";
 import {jwtDecode} from "jwt-decode";
 import {jwtAtom} from "/src/atoms/auth.ts";
 
-// Атом для списку транзакцій
+// Atom for transaction list
 export const transactionsAtom = atom<GetTransactionDto[]>([]);
 
-// Атом для стану завантаження
+// Atom for loading state
 export const transactionsLoadingAtom = atom(false);
 
-// Атом для фільтрації (опціонально)
+// Atom for filtering (optional)
 export const transactionFilterAtom = atom("");
 
 
@@ -29,10 +29,10 @@ export const playerIdAtom = atom((get) => {
         return null;
     }
 });
-// Функція для отримання транзакцій з API
+// Function to get transactions from the API
 export const fetchTransactions = async (setTransactions: (data: GetTransactionDto[]) => void, token: string) => {
     try {
-        // Розкодування токена для отримання playerId
+        // Decode token to get playerId
         const decodedToken: any = jwtDecode(token);
         const playerId = decodedToken.playerId;
 
@@ -41,20 +41,20 @@ export const fetchTransactions = async (setTransactions: (data: GetTransactionDt
             return;
         }
 
-        // Запит до бекенда з playerId
+        // Request backend with playerId
         const response = await http.transactionPlayerDetail(playerId, {
             limit: 50, // Можна змінити за потребою
             startAt: 0,
         });
 
         // @ts-ignore
-        setTransactions(response.data); // Оновлення стану транзакцій
+        setTransactions(response.data); // Update transaction status
     } catch (error) {
         console.error("Failed to fetch transactions:", error);
-        setTransactions([]); // У разі помилки очищуємо стан
+        setTransactions([]); // In case of an error, we clear the state
     }
 
-    // Атом для Player ID (витягуємо з токена)
+     
 
 
 

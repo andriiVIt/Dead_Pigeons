@@ -14,7 +14,7 @@ public class TransactionControllerTests : ApiTestBase
     [Fact]
     public async Task CreateTransaction_ReturnsOkAndTransaction()
     {
-        // Створимо тестового гравця, щоб ми могли зробити транзакцію
+        // Create a test player so we can make a transaction
         using (var scope = ApplicationServices.CreateScope())
         {
             var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -31,7 +31,7 @@ public class TransactionControllerTests : ApiTestBase
             var player = new Player
             {
                 Id = Guid.NewGuid(),
-                UserId = user.Id, // встановлюємо user.Id
+                UserId = user.Id, // set user id
                 Name = "Test Player",
                 Balance = 100m,
                 IsActive = true
@@ -39,7 +39,7 @@ public class TransactionControllerTests : ApiTestBase
             ctx.Players.Add(player);
             ctx.SaveChanges();
 
-            // Створюємо DTO для транзакції
+            // Create a DTO for the transaction
             var dto = new CreateTransactionDto
             {
                 PlayerId = player.Id,
@@ -47,20 +47,20 @@ public class TransactionControllerTests : ApiTestBase
                 MobilePayTransactionId = "ggggggggg"
             };
 
-            // Відправляємо POST запит до /api/transaction
+            // Send a POST request to /api/transaction
             var response = await Client.PostAsJsonAsync("/api/transaction", dto);
 
-            // Перевірка статусу
+            // Status check
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            // Перевіряємо вміст відповіді
+            // We check the content of the response
             var result = await response.Content.ReadFromJsonAsync<GetTransactionDto>();
             result.Should().NotBeNull();
             result!.PlayerId.Should().Be(player.Id);
             result.Amount.Should().Be(50m);
             result.MobilePayTransactionId.Should().Be("ggggggggg");
 
-            // Перевіримо, що транзакція справді збереглася в БД
+            // Check that the transaction is really saved in the database
             var savedTransaction = ctx.Transactions.Find(result.Id);
             savedTransaction.Should().NotBeNull();
             savedTransaction!.Amount.Should().Be(50m);
@@ -74,7 +74,7 @@ public async Task DeleteTransaction_RemovesTransactionFromDatabase()
     {
         var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        // Створюємо користувача
+         
         var user = new User
         {
             Id = Guid.NewGuid().ToString(),
@@ -84,7 +84,7 @@ public async Task DeleteTransaction_RemovesTransactionFromDatabase()
         ctx.Users.Add(user);
         ctx.SaveChanges();
 
-        // Створюємо гравця
+        
         var player = new Player
         {
             Id = Guid.NewGuid(),
@@ -96,7 +96,7 @@ public async Task DeleteTransaction_RemovesTransactionFromDatabase()
         ctx.Players.Add(player);
         ctx.SaveChanges();
 
-        // Створюємо транзакцію
+         
         var transaction = new Transaction
         {
             Id = Guid.NewGuid(),
@@ -108,22 +108,22 @@ public async Task DeleteTransaction_RemovesTransactionFromDatabase()
         ctx.Transactions.Add(transaction);
         ctx.SaveChanges();
 
-        // Перевіряємо, що транзакція збережена
+        // Check that the transaction is saved
         var existingTransaction = ctx.Transactions.Find(transaction.Id);
         existingTransaction.Should().NotBeNull();
 
-        // Відправляємо DELETE запит
+        // Send a DELETE request
         var response = await Client.DeleteAsync($"/api/transaction/{transaction.Id}");
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        // Перевіряємо стан бази даних з новим контекстом
+        // Check the state of the database with the new context
         using (var freshCtx = ApplicationServices.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>())
         {
-            // Транзакція має бути видалена
+            // The transaction should be deleted
             var deletedTransaction = freshCtx.Transactions.Find(transaction.Id);
             deletedTransaction.Should().BeNull();
 
-            // Баланс гравця має бути оновлений
+            // Player balance should be updated
             var updatedPlayer = freshCtx.Players.Find(player.Id);
             updatedPlayer.Should().NotBeNull();
             updatedPlayer!.Balance.Should().Be(100m); // 200 - 100
@@ -135,12 +135,12 @@ public async Task UpdateTransaction_ReturnsOkAndUpdatedTransaction()
 {
     Guid transactionId;
 
-    // Arrange: створення початкових даних
+    // Arrange: create initial data
     using (var scope = ApplicationServices.CreateScope())
     {
         var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        // Створюємо користувача
+        // Create a user
         var user = new User
         {
             Id = Guid.NewGuid().ToString(),
@@ -150,7 +150,7 @@ public async Task UpdateTransaction_ReturnsOkAndUpdatedTransaction()
         ctx.Users.Add(user);
         ctx.SaveChanges();
 
-        // Створюємо гравця
+        // Create a player
         var player = new Player
         {
             Id = Guid.NewGuid(),
@@ -162,7 +162,7 @@ public async Task UpdateTransaction_ReturnsOkAndUpdatedTransaction()
         ctx.Players.Add(player);
         ctx.SaveChanges();
 
-        // Створюємо транзакцію
+        // Create a transaction
         var transaction = new Transaction
         {
             Id = Guid.NewGuid(),
@@ -174,38 +174,38 @@ public async Task UpdateTransaction_ReturnsOkAndUpdatedTransaction()
         ctx.Transactions.Add(transaction);
         ctx.SaveChanges();
 
-        transactionId = transaction.Id; // Зберігаємо ID транзакції
+        transactionId = transaction.Id; // Store the transaction ID
     }
 
-    // DTO для оновлення транзакції
+    // DTO to update the transaction
     var updateDto = new
     {
         Amount = 200m,
         MobilePayTransactionId = "updated_transaction"
     };
 
-    // Act: відправляємо PUT запит для оновлення транзакції
+    // Act: send a PUT request to update the transaction
     var response = await Client.PutAsJsonAsync($"/api/Transaction/{transactionId}", updateDto);
 
-    // Assert: перевірка статусу відповіді
+    // Assert: check the response status
     response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-    // Перевіряємо, що транзакція була оновлена
+    // Check that the transaction has been updated
     var updatedTransaction = await response.Content.ReadFromJsonAsync<GetTransactionDto>();
     updatedTransaction.Should().NotBeNull();
     updatedTransaction!.Id.Should().Be(transactionId);
     updatedTransaction.Amount.Should().Be(200m);
     updatedTransaction.MobilePayTransactionId.Should().Be("updated_transaction");
 
-    // Перевірка в базі даних
+    // Checking in the database
     using (var freshScope = ApplicationServices.CreateScope())
     {
         var freshCtx = freshScope.ServiceProvider.GetRequiredService<AppDbContext>();
         var transactionInDb = freshCtx.Transactions.Find(transactionId);
 
         transactionInDb.Should().NotBeNull();
-        transactionInDb!.Amount.Should().Be(200m); // Перевіряємо оновлену суму
-        transactionInDb.MobilePayTransactionId.Should().Be("updated_transaction"); // Перевіряємо оновлений ID
+        transactionInDb!.Amount.Should().Be(200m); // Check the updated amount
+        transactionInDb.MobilePayTransactionId.Should().Be("updated_transaction"); // Check the updated ID
     }
 }
 }

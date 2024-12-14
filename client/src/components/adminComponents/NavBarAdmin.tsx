@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {useAuth} from "/src/atoms/auth.ts";
 
 const NavBarAdmin: React.FC = () => {
-    const { logout } = useAuth(); // Отримуємо функцію logout із вашого атома
+    const { logout } = useAuth(); // Get the logout function from  atom
 
     return (
         <div className="navbar bg-base-100 w-full">

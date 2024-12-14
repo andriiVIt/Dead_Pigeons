@@ -84,7 +84,7 @@ const PlayerDashboard: React.FC = () => {
         <div className="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-800 to-pink-600 relative text-white">
             <NavBarPlayer />
 
-            {/* Привітальне повідомлення */}
+            {/* Welcome message */}
             <div className="flex justify-center items-center h-[30vh]">
                 <div className="animate-fade-in bg-indigo-500 bg-opacity-20 p-8 rounded-lg shadow-lg text-center">
                     <h1 className="text-4xl font-bold animate-bounce">
@@ -94,7 +94,7 @@ const PlayerDashboard: React.FC = () => {
                 </div>
             </div>
 
-            {/* Перевірка перемоги */}
+            {/* Check win */}
             <div className="container mx-auto py-10 text-white text-center z-10">
                 <h2 className="text-3xl font-bold mb-6">Check if you are a winner!</h2>
                 <div className="mb-4">
@@ -130,7 +130,7 @@ const PlayerDashboard: React.FC = () => {
                 )}
             </div>
 
-            {/* Список перемог */}
+            {/* List of victories */}
             <div className="container mx-auto py-10 text-white text-center z-10">
                 <h2 className="text-4xl font-bold mb-6">Your Winning Results:</h2>
                 {gameResults.filter((result) => result.winner).length > 0 ? (
@@ -165,7 +165,7 @@ const PlayerDashboard: React.FC = () => {
                 )}
             </div>
 
-            {/* Підпис */}
+            {/* Signature */}
             <footer className="text-center py-4 text-sm text-gray-200">
                 <p>© {new Date().getFullYear()} Dead Pigeons Lottery. All rights reserved.</p>
             </footer>

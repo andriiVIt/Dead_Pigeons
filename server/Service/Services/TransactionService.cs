@@ -21,10 +21,10 @@ public class TransactionService : ITransactionService
 
     public GetTransactionDto CreateTransaction(CreateTransactionDto createTransactionDto)
     {
-        // Валідація вхідних даних
+        // Validation of input data
         _createValidator.ValidateAndThrow(createTransactionDto);
 
-        // Отримання гравця з бази даних
+        // Get the player from the database
         var player = _context.Players.FirstOrDefault(p => p.Id == createTransactionDto.PlayerId);
         if (player == null)
         {
@@ -36,34 +36,34 @@ public class TransactionService : ITransactionService
             throw new InvalidOperationException("Inactive players cannot make transactions.");
         }
 
-        // Початок транзакції
+        // Start the transaction
         using var dbTransaction = _context.Database.BeginTransaction();
         try
         {
-            // Створення нової транзакції
+            // Create a new transaction
             var transaction = CreateTransactionDto.ToEntity(createTransactionDto);
             _context.Transactions.Add(transaction);
 
-            // Оновлення балансу гравця
+            // Update player balance
             player.Balance += createTransactionDto.Amount;
             _context.Entry(player).State = EntityState.Modified;
 
-            // Логування для налагодження
+            // Login for debugging
             Console.WriteLine($"Player ID: {player.Id}");
             Console.WriteLine($"Balance before: {player.Balance - createTransactionDto.Amount}");
             Console.WriteLine($"Balance after: {player.Balance}");
 
-            // Збереження змін у базі даних
+            // Save changes to the database
             _context.SaveChanges();
 
-            // Коміт транзакції
+            // Commit the transaction
             dbTransaction.Commit();
 
             return GetTransactionDto.FromEntity(transaction);
         }
         catch (Exception ex)
         {
-            // Відкат змін у разі помилки
+            // Roll back changes in case of error
             dbTransaction.Rollback();
             throw new Exception($"Failed to save transaction and update balance: {ex.Message}");
         }
@@ -83,21 +83,21 @@ public class TransactionService : ITransactionService
 
         updateTransactionDto.UpdateEntity(transaction);
 
-        // Початок транзакції
+        // Start the transaction
         using var dbTransaction = _context.Database.BeginTransaction();
         try
         {
             Console.WriteLine($"Transaction before saving: {transaction.Amount}, {transaction.MobilePayTransactionId}");
-            _context.Entry(transaction).State = EntityState.Modified; // Позначаємо об'єкт як змінений
-            _context.SaveChanges(); // Зберігаємо зміни
-            dbTransaction.Commit(); // Коміт транзакції
+            _context.Entry(transaction).State = EntityState.Modified; // Mark the object as changed
+            _context.SaveChanges(); // Save the changes
+            dbTransaction.Commit(); // Commit the transaction
             Console.WriteLine("Transaction committed successfully.");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Transaction failed: {ex.Message}");
-            dbTransaction.Rollback(); // Відкат змін у разі помилки
-            throw; // Проброс помилки далі
+            dbTransaction.Rollback(); // Roll back changes in case of error
+            throw; // Throw the error further
         }
 
         return GetTransactionDto.FromEntity(transaction);
@@ -126,14 +126,14 @@ public class TransactionService : ITransactionService
 
     public bool DeleteTransaction(Guid transactionId)
     {
-        // Отримуємо транзакцію
+        // We receive a transaction
         var transaction = _context.Transactions.Include(t => t.Player).FirstOrDefault(t => t.Id == transactionId);
         if (transaction == null)
         {
             throw new KeyNotFoundException("Transaction not found.");
         }
 
-        // Перевіряємо, чи є гравець
+        // Check if there is a player
         var player = transaction.Player;
         if (player == null)
         {
@@ -143,24 +143,24 @@ public class TransactionService : ITransactionService
         using var dbTransaction = _context.Database.BeginTransaction();
         try
         {
-            // Зменшуємо баланс гравця
+            // Decrease the player's balance
             player.Balance -= transaction.Amount;
             _context.Entry(player).State = EntityState.Modified;
 
-            // Видаляємо транзакцію
+            // Delete the transaction
             _context.Transactions.Remove(transaction);
 
-            // Зберігаємо зміни
+            // Save the changes
             _context.SaveChanges();
 
-            // Коміт транзакції
+            // Commit the transaction
             dbTransaction.Commit();
 
             return true;
         }
         catch (Exception ex)
         {
-            // Відкат транзакції у разі помилки
+            // Rollback transaction in case of error
             dbTransaction.Rollback();
             throw new Exception($"Failed to delete transaction and update balance: {ex.Message}");
         }

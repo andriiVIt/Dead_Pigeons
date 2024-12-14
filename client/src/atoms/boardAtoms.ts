@@ -4,34 +4,18 @@ import { GetBoardDto } from "../Api";
 import {jwtDecode} from "jwt-decode";
 import { jwtAtom } from "/src/atoms/auth.ts";
 
-// Атом для списку бордів
+// Atom for the board list
 export const boardsAtom = atom<GetBoardDto[]>([]);
 
-// Атом для стану завантаження
+// Atom for loading state
 export const boardsLoadingAtom = atom(false);
 
-// Атом для отримання Player ID із токена
-// export const playerIdAtom = atom((get) => {
-//     const token = get(jwtAtom);
-//     if (!token) {
-//         console.error("Token not found.");
-//         return null;
-//     }
-//
-//     try {
-//
-//         const decodedToken: any = jwtDecode(token);
-//         return decodedToken.playerId || null;
-//     } catch (error) {
-//         console.error("Error decoding token:", error);
-//         return null;
-//     }
-// });
 
-// Функція для отримання бордів з API
+
+// Function to get boards from API
 export const fetchBoards = async (setBoards: (data: GetBoardDto[]) => void, token: string) => {
     try {
-        // Розкодування токена для отримання playerId
+        // Decode token to get playerId
         const decodedToken: any = jwtDecode(token);
         const playerId = decodedToken.playerId;
 
@@ -43,15 +27,15 @@ export const fetchBoards = async (setBoards: (data: GetBoardDto[]) => void, toke
             return;
         }
 
-        // Запит до API
+        // API request
         const response = await http.boardList({
-            limit: 50, // Обмеження кількості бордів
+            limit: 50, // Limiting the number of boards
             startAt: 0,
         });
 
         console.log("Fetched Boards:", response.data);
 
-        // Фільтрація бордів
+        // Edge filtering
         const playerBoards = response.data.filter((board: GetBoardDto) => board.playerId === playerId);
 
         console.log("Filtered Boards:", playerBoards);

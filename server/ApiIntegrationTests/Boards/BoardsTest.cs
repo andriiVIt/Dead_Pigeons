@@ -12,14 +12,14 @@ public class BoardsTests : ApiTestBase
     [Fact]
 public async Task CreateBoard_ReturnsOkAndBoard()
 {
-    Guid playerId; // Оголошення змінної поза областю
+    Guid playerId; // Declare a variable out of scope
 
     // Arrange
     using (var scope = ApplicationServices.CreateScope())
     {
         var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        // Створення тестового користувача та гравця
+        // Create test user and player
         var user = new User
         {
             Id = Guid.NewGuid().ToString(),
@@ -34,15 +34,15 @@ public async Task CreateBoard_ReturnsOkAndBoard()
             Id = Guid.NewGuid(),
             UserId = user.Id,
             Name = "Test Player",
-            Balance = 100m, // Достатній баланс для покупки дошки
+            Balance = 100m, // Sufficient balance to buy a board
             IsActive = true
         };
         ctx.Players.Add(player);
 
-        // Зберігаємо player.Id для подальшого використання
+        // Save the player id for later use
         playerId = player.Id;
 
-        // Створення гри
+        // Create the game
         var game = new Game
         {
             Id = Guid.NewGuid(),
@@ -53,12 +53,12 @@ public async Task CreateBoard_ReturnsOkAndBoard()
         ctx.Games.Add(game);
         ctx.SaveChanges();
 
-        // DTO для створення дошки
+        // DTO to create the board
         var dto = new CreateBoardDto
         {
             PlayerId = player.Id,
             GameId = game.Id,
-            Numbers = new List<int> { 1, 2, 3, 4, 5 } // Ціна для 5 чисел - 20m
+            Numbers = new List<int> { 1, 2, 3, 4, 5 } // Price for 5 numbers - 20m
         };
 
         // Act
@@ -74,7 +74,7 @@ public async Task CreateBoard_ReturnsOkAndBoard()
         result.Numbers.Should().BeEquivalentTo(dto.Numbers);
         result.Price.Should().Be(20m);
 
-        // Перевірка, що дошка збережена в БД
+        // Checking that the board is saved in the database
         var savedBoard = ctx.Boards.Find(result.Id);
         savedBoard.Should().NotBeNull();
         savedBoard!.PlayerId.Should().Be(player.Id);
@@ -83,11 +83,11 @@ public async Task CreateBoard_ReturnsOkAndBoard()
         savedBoard.Price.Should().Be(20m);
     }
 
-    // Перевірка оновлення балансу гравця в новому контексті
+    // Check to update the player's balance in the new context
     using (var newScope = ApplicationServices.CreateScope())
     {
         var freshCtx = newScope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var updatedPlayer = freshCtx.Players.Find(playerId); // Використовуємо збережений ID
+        var updatedPlayer = freshCtx.Players.Find(playerId); // We use the stored ID
 
         updatedPlayer.Should().NotBeNull();
         updatedPlayer!.Balance.Should().Be(80m); // 100m - 20m

@@ -11,8 +11,8 @@ const BoardsAdmin: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const [sortColumn, setSortColumn] = useState<string>(""); // Колонка для сортування
-    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc"); // Напрямок сортування
+    const [sortColumn, setSortColumn] = useState<string>(""); // Column for sorting
+    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc"); // Sort direction
 
     useEffect(() => {
         const fetchData = async () => {
@@ -39,13 +39,13 @@ const BoardsAdmin: React.FC = () => {
         fetchData();
     }, []);
 
-    // Знаходимо ім'я гравця за його ID
+    // We find the name of the player by his ID
     const getPlayerName = (playerId: string) => {
         const player = players.find((p) => p.id === playerId);
         return player?.name || "Unknown Player";
     };
 
-    // Обчислюємо тиждень гри за датою початку
+    // Calculate the week of the game based on the start date
     const getGameWeek = (gameId: string) => {
         const game = games.find((g) => g.id === gameId);
         if (game?.startDate) {
@@ -57,7 +57,7 @@ const BoardsAdmin: React.FC = () => {
         return null;
     };
 
-    // Сортування даних
+    // Sort data
     const sortedBoards = [...boards].sort((a, b) => {
         if (!sortColumn) return 0;
 
@@ -81,7 +81,7 @@ const BoardsAdmin: React.FC = () => {
         }
     });
 
-    // Функція для зміни сортування
+    // Function to change the sort
     const handleSort = (column: string) => {
         if (sortColumn === column) {
             setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));

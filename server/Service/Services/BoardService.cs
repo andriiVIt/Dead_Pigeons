@@ -17,12 +17,12 @@ public class BoardService : IBoardService
 
     public GetBoardDto CreateBoard(CreateBoardDto createBoardDto)
     {
-        // Перевірка: чи існує гравець
+        // Check if the player exists
         var player = _context.Players.Find(createBoardDto.PlayerId);
         if (player == null)
             throw new KeyNotFoundException("Player not found.");
 
-        // Перевірка: чи вистачає коштів
+        // Check: whether there are enough funds
         int numberCount = createBoardDto.Numbers.Count;
         decimal price = numberCount switch
         {
@@ -36,10 +36,10 @@ public class BoardService : IBoardService
         if (player.Balance < price)
             throw new InvalidOperationException("Insufficient balance.");
 
-        // Зменшення балансу гравця
+        // Decrease the player's balance
         player.Balance -= price;
         _context.Players.Update(player);
-        // Створення дошки
+        // Create a board
         var board = new Board
         {
             Id = Guid.NewGuid(),

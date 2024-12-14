@@ -19,7 +19,7 @@ const GameTable: React.FC = () => {
     useEffect(() => {
         const fetchGames = async () => {
             try {
-                const response = await http.gameList(); // Підтягуємо список ігор
+                const response = await http.gameList(); // Pull up the list of games
                 setGames(response.data);
             } catch (error) {
                 console.error("Failed to fetch games:", error);
@@ -60,7 +60,7 @@ const GameTable: React.FC = () => {
         };
 
         try {
-            const response = await http.boardCreate(payload); // Відправляємо запит на створення дошки
+            const response = await http.boardCreate(payload); // We send a request to create a board
             toast.success("Board created successfully!");
             setBalanceUpdated(!balanceUpdated);
         } catch (error) {
@@ -84,7 +84,7 @@ const GameTable: React.FC = () => {
                 <div className="mb-6 text-center">
                     <label className="text-xl font-bold text-white">Select a Game:</label>
                     <select
-                        className="ml-4 p-2 rounded bg-white text-black w-64" // Додаємо стилі для чорного тексту
+                        className="ml-4 p-2 rounded bg-white text-black w-64" // Add styles for black text
                         value={selectedGameId || ""}
                         onChange={(e) => setSelectedGameId(e.target.value)}
                     >

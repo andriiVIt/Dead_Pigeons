@@ -42,8 +42,8 @@ namespace DataAccess
             
             modelBuilder.Entity<Board>()
                 .Property(b => b.Price)
-                .HasColumnType("decimal(10, 2)") // Тип для точного зберігання грошових сум
-                .IsRequired(); // Ціна є обов'язковою
+                .HasColumnType("decimal(10, 2)") // Type for accurate storage of monetary amounts
+                .IsRequired(); // Price is mandatory
 
             // Game -> Winner (One-to-Many)
             modelBuilder.Entity<Winner>()
@@ -76,8 +76,8 @@ namespace DataAccess
             
             
             modelBuilder.Entity<Player>()
-                .HasOne(p => p.User) // Гравець має посилання на користувача
-                .WithMany(u => u.Players) // Користувач має колекцію гравців
+                .HasOne(p => p.User) // The player has a reference to the user
+                .WithMany(u => u.Players) // User has a collection of players
                 .HasForeignKey(p => p.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
                 

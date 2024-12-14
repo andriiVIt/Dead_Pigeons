@@ -26,7 +26,7 @@ const PlayerBalance: React.FC = () => {
         <div
             className="relative bg-green-500 text-white px-6 py-4 rounded shadow text-lg md:text-xl mx-auto max-w-xs sm:max-w-sm lg:max-w-md"
             style={{
-                marginTop: "1rem", // Відступ від тексту "Select a Game"
+                marginTop: "1rem", // Indent "Select a Game" text
             }}
         >
             {balance !== null ? (

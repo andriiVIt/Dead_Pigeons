@@ -1,14 +1,14 @@
 import { atom } from "jotai";
 import { GetGameDto } from "/src/Api";
 
-// Атом для списку ігор
+// An atom for the list of games
 export const gamesAtom = atom<GetGameDto[]>([]);
 
-// Атом для стану вибраного Game
+// Atom for selected state Game
 export const selectedGameAtom = atom<GetGameDto | null>(null);
 
-// Атом для стану завантаження
+// Atom for loading state
 export const isLoadingGamesAtom = atom(false);
 
-// Атом для помилки
+// Atom for error
 export const gamesErrorAtom = atom<string | null>(null);

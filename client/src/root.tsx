@@ -10,7 +10,7 @@ export default function Root() {
             ></div>
 
             <Toaster
-                position="bottom-right" // Додаємо позицію тостів
+                position="bottom-right" // Add the position of the toasts
                 toastOptions={{
                     style: {
                         borderRadius: "10px",

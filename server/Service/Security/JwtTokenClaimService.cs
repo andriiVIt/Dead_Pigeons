@@ -27,21 +27,21 @@ public JwtTokenClaimService(IOptions<AppOptions> options, UserManager<User> user
 
     public async Task<string> GetTokenAsync(string userName)
     {
-        // Знаходимо користувача за ім'ям
+        // Find the user by name
         var user = await _userManager.FindByNameAsync(userName)
                    ?? throw new Exception("Could not find user");
 
-        // Отримуємо ролі користувача
+        // Get user roles
         var roles = await _userManager.GetRolesAsync(user);
         var claims = new ClaimsIdentity(user.ToClaims(roles));
         var player =  _context.Players.FirstOrDefault(p => p.UserId == user.Id);
         if (player != null)
         {
-            claims.AddClaim(new Claim("playerId", player.Id.ToString())); // Додаємо playerId
+            claims.AddClaim(new Claim("playerId", player.Id.ToString())); // Add playerId
         }
-        claims.AddClaim(new Claim("currentDate", DateTime.UtcNow.ToString("yyyy-MM-dd"))); // Додаємо дату
+        claims.AddClaim(new Claim("currentDate", DateTime.UtcNow.ToString("yyyy-MM-dd"))); // Add the date
 
-        // Генеруємо токен
+        // Generate token
         var key = Convert.FromBase64String(_options.JwtSecret);
         var tokenDescriptor = new SecurityTokenDescriptor
         {

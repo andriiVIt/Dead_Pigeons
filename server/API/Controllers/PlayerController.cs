@@ -60,14 +60,14 @@ public class PlayerController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeletePlayer(Guid id)
     {
-        // Використовуємо сервіс для видалення гравця
+        // We use the service to delete the player
         var success = _service.DeletePlayer(id);
 
         if (!success)
         {
-            return NotFound(); // Якщо гравця не знайдено
+            return NotFound(); // If no player found
         }
 
-        return NoContent(); // Успішне видалення
+        return NoContent(); // Successful deletion
     }
 }

@@ -67,7 +67,7 @@ public class GameService(
     }
     public CheckWinnerResponseDto CheckForWinner(Guid gameId, Guid playerId)
     {
-        // Отримати гру
+        // Get the game
         var game = context.Games
             .Include(g => g.Boards)
             .ThenInclude(b => b.Player)
@@ -78,7 +78,7 @@ public class GameService(
             throw new KeyNotFoundException("Game not found.");
         }
 
-        // Отримати комбінацію чисел гравця
+        // Get the combination of the player's numbers
         var board = game.Boards.FirstOrDefault(b => b.PlayerId == playerId);
 
         if (board == null)
@@ -86,13 +86,13 @@ public class GameService(
             throw new KeyNotFoundException("Board for player not found.");
         }
 
-        // Перевірити, чи виграв гравець
+        // Check if the player has won
         bool isWinner = board.Numbers.SequenceEqual(game.WinningSequence);
 
         if (isWinner)
         {
-            // Створити запис про переможця
-            var prizeAmount = CalculatePrizeAmount(gameId); // Метод для розрахунку виграшу
+            // Create a record about the winner
+            var prizeAmount = CalculatePrizeAmount(gameId); // Method for calculating winnings
             var winner = new DataAccess.models.Winner
             {
                 Id = Guid.NewGuid(),
@@ -127,6 +127,6 @@ public class GameService(
                 .Contains(t.PlayerId))
             .Sum(t => t.Amount);
 
-        return totalBets * 0.8m; // 80% від ставок як приз
+        return totalBets * 0.8m; // 80% of bets as a prize
     }
 }

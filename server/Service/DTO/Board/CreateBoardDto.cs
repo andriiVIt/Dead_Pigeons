@@ -14,7 +14,7 @@ public class CreateBoardDto
             PlayerId = dto.PlayerId,
             GameId = dto.GameId,
             Numbers = dto.Numbers,
-            Price = CalculatePrice(dto.Numbers.Count) // Обчислюємо ціну
+            Price = CalculatePrice(dto.Numbers.Count)  
         };
     }
 

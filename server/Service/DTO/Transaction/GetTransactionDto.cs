@@ -4,7 +4,7 @@ public class GetTransactionDto
 {
     public Guid Id { get; set; }
     public Guid PlayerId { get; set; }
-    public string PlayerName { get; set; } = string.Empty; // Додано PlayerName
+    public string PlayerName { get; set; } = string.Empty;  
     public decimal Amount { get; set; }
     public string MobilePayTransactionId { get; set; } = string.Empty;
     public DateTime TransactionDate { get; set; }
@@ -15,7 +15,7 @@ public class GetTransactionDto
         {
             Id = transaction.Id,
             PlayerId = transaction.PlayerId,
-            PlayerName = transaction.Player?.Name ?? "Unknown", // Перевірка на null
+            PlayerName = transaction.Player?.Name ?? "Unknown", // Check for null
             Amount = transaction.Amount,
             MobilePayTransactionId = transaction.MobilePayTransactionId ?? string.Empty,
             TransactionDate = transaction.TransactionDate

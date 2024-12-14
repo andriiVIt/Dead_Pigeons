@@ -1,15 +1,15 @@
 import { atom } from "jotai";
 import { GetPlayerDto } from "../Api.ts";
 
-// Список гравців
+// List of players
 export const playerListAtom = atom<GetPlayerDto[]>([]);
 
-// Вибраний гравець для редагування
+// Selected player to edit
 export const selectedPlayerAtom = atom<GetPlayerDto | null>(null);
 
-// Стан завантаження
+// Loading state
 export const isLoadingPlayersAtom = atom<boolean>(false);
 
-// Стан помилок
+// Error status
 export const playersErrorAtom = atom<string | null>(null);
 
