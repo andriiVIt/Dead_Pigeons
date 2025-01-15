@@ -12,7 +12,7 @@ public class Argon2idPasswordHasher<TUser> : IPasswordHasher<TUser> where TUser 
 
     public string HashPassword(TUser user, string password)
     {
-        var salt = RandomNumberGenerator.GetBytes(128 / 8);
+        var salt = RandomNumberGenerator.GetBytes(128 / 8);//16byt
         var hash = GenerateHash(password, salt);
         return $"{Name}${Encode(salt)}${Encode(hash)}";
     }
@@ -33,11 +33,11 @@ public class Argon2idPasswordHasher<TUser> : IPasswordHasher<TUser> where TUser 
         using var hashAlgo = new Argon2id(Encoding.UTF8.GetBytes(password))
         {
             Salt = salt,
-            MemorySize = 12288,
+            MemorySize = 12288,//12mb
             Iterations = 3,
             DegreeOfParallelism = 1
         };
-        return hashAlgo.GetBytes(256 / 8);
+        return hashAlgo.GetBytes(256 / 8);// return 32 bytes
     }
 
     protected byte[] Decode(string value)

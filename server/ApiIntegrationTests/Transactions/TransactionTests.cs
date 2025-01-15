@@ -5,18 +5,21 @@ using FluentAssertions;
 using DataAccess;
 using DataAccess.models;
 using Microsoft.Extensions.DependencyInjection;
-using Service.DTO.Transaction;
 using System;
+using Generated;
+using CreateTransactionDto = Service.DTO.Transaction.CreateTransactionDto;
 
 public class TransactionControllerTests : ApiTestBase
 {
     
     [Fact]
+    
     public async Task CreateTransaction_ReturnsOkAndTransaction()
-    {
-        // Create a test player so we can make a transaction
+    { 
+        //Arrange
+        // Create a test scope for Dependency Injection (DI)
         using (var scope = ApplicationServices.CreateScope())
-        {
+        { // Get the AppDbContext from the service provider
             var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             var user = new User
@@ -46,13 +49,13 @@ public class TransactionControllerTests : ApiTestBase
                 Amount = 50m,
                 MobilePayTransactionId = "ggggggggg"
             };
-
+             //act
             // Send a POST request to /api/transaction
             var response = await Client.PostAsJsonAsync("/api/transaction", dto);
 
             // Status check
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-
+            //Assert
             // We check the content of the response
             var result = await response.Content.ReadFromJsonAsync<GetTransactionDto>();
             result.Should().NotBeNull();
@@ -68,13 +71,13 @@ public class TransactionControllerTests : ApiTestBase
         }
     }
     [Fact]
-public async Task DeleteTransaction_RemovesTransactionFromDatabase()
+public async Task DeleteTransaction_RemovesTransactionFromDatabase_UsingSwaggerClient()
 {
     using (var scope = ApplicationServices.CreateScope())
     {
         var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-         
+        // Create a test user
         var user = new User
         {
             Id = Guid.NewGuid().ToString(),
@@ -84,7 +87,7 @@ public async Task DeleteTransaction_RemovesTransactionFromDatabase()
         ctx.Users.Add(user);
         ctx.SaveChanges();
 
-        
+        // Create a test player
         var player = new Player
         {
             Id = Guid.NewGuid(),
@@ -96,7 +99,7 @@ public async Task DeleteTransaction_RemovesTransactionFromDatabase()
         ctx.Players.Add(player);
         ctx.SaveChanges();
 
-         
+        // Create a test transaction
         var transaction = new Transaction
         {
             Id = Guid.NewGuid(),
@@ -108,22 +111,22 @@ public async Task DeleteTransaction_RemovesTransactionFromDatabase()
         ctx.Transactions.Add(transaction);
         ctx.SaveChanges();
 
-        // Check that the transaction is saved
+        // Verify transaction exists in the database
         var existingTransaction = ctx.Transactions.Find(transaction.Id);
         existingTransaction.Should().NotBeNull();
 
-        // Send a DELETE request
-        var response = await Client.DeleteAsync($"/api/transaction/{transaction.Id}");
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        // Use the Swagger client to delete the transaction
+        var swaggerClient = scope.ServiceProvider.GetRequiredService<SwaggerClient>();
+        await swaggerClient.TransactionDELETEAsync(transaction.Id);
 
-        // Check the state of the database with the new context
+        // Verify the transaction has been deleted from the database
         using (var freshCtx = ApplicationServices.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>())
         {
-            // The transaction should be deleted
+            // The transaction should no longer exist
             var deletedTransaction = freshCtx.Transactions.Find(transaction.Id);
             deletedTransaction.Should().BeNull();
 
-            // Player balance should be updated
+            // Verify the player's balance is updated
             var updatedPlayer = freshCtx.Players.Find(player.Id);
             updatedPlayer.Should().NotBeNull();
             updatedPlayer!.Balance.Should().Be(100m); // 200 - 100
